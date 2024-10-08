@@ -1,13 +1,9 @@
-use diesel::{
-    prelude::{Insertable, Queryable},
-    Selectable,
-};
+use diesel::{prelude::{Insertable, Queryable}, Selectable};
 
-#[derive(Queryable, Selectable, Insertable)]
+#[derive(Queryable, Insertable, Selectable)]
 #[diesel(table_name = crate::database::schema::subscribers)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
-#[derive(Debug)]
-pub struct Subcribers {
+pub struct Subcriber{
     pub id: i32,
     pub email: String,
 }
@@ -17,38 +13,4 @@ pub struct Subcribers {
 pub struct NewSubscriber {
     pub email: String,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

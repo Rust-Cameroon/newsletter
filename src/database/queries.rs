@@ -1,10 +1,15 @@
-use totp_rs::{Algorithm, Secret, TOTP};
 use diesel::{prelude::*, result::Error};
+use totp_rs::{Algorithm, Secret, TOTP};
 
-use super::schema::subscribers;
+use crate::database::model::Subcriber;
+
+use super::{
+    model::NewSubscriber,
+    schema::{self, subscribers::{self, email}},
+};
 pub struct Otp;
 
-type Database = PgConnection;
+pub type Database = PgConnection;
 impl Otp {
     pub fn generate_new() -> String {
         let totp = TOTP::new(
@@ -17,8 +22,7 @@ impl Otp {
                 .unwrap(),
         )
         .unwrap();
-      totp.generate_current().unwrap()
-     
+        totp.generate_current().unwrap()
     }
     pub fn new() -> TOTP {
         let totp = TOTP::new(
@@ -31,18 +35,33 @@ impl Otp {
                 .unwrap(),
         )
         .unwrap();
-    totp
+        totp
     }
-    
 }
-pub async fn subscribe(
-    conn: &Database,
-    email: String
-) -> Result<(), Error>
-{
+pub async fn subscribe(conn: &mut Database, email_addr: String) -> Result<usize, Error> {
+    let new_sub = NewSubscriber { email: email_addr };
     diesel::insert_into(subscribers::table)
-    .values("")
-    .returning(Post::as_returning())
-    .get_result(conn)
-    .expect("Error saving new post")
+        .values(new_sub)
+        .execute(&mut *conn)
+}
+pub async fn unsubscribe(
+    conn: &mut Database,
+    mail_addr: String,
+) -> Result<usize, diesel::result::Error> {
+    use schema::subscribers::dsl::*;
+    let conn = conn;
+    diesel::delete(subscribers.filter(email.like(mail_addr))).execute(&mut *conn)
+}
+pub async fn get_subscriber(
+    conn: &mut Database,
+    email_addr: &String,
+) -> Result<Option<email>, diesel::result::Error> {
+    use schema::subscribers::dsl::*;
+    let mut conn = conn;
+    let result = subscribers
+        .filter(email.eq(email_addr))
+        .select(Subcriber::as_select())
+        .first(&mut *conn)?;
+
+    Ok(Some(result))
 }
