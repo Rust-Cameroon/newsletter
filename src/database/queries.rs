@@ -4,9 +4,8 @@ use totp_rs::{Algorithm, Secret, TOTP};
 use crate::database::model::Subcriber;
 
 use super::{
-    model::NewSubscriber,
-    schema::{self, subscribers::{self, email}},
-};
+    model::NewSubscriber, schema::{self, subscribers}}
+;
 pub struct Otp;
 
 pub type Database = PgConnection;
@@ -55,9 +54,9 @@ pub async fn unsubscribe(
 pub async fn get_subscriber(
     conn: &mut Database,
     email_addr: &String,
-) -> Result<Option<email>, diesel::result::Error> {
+) -> Result<Option<Subcriber>, diesel::result::Error> {
     use schema::subscribers::dsl::*;
-    let mut conn = conn;
+    let conn = conn;
     let result = subscribers
         .filter(email.eq(email_addr))
         .select(Subcriber::as_select())

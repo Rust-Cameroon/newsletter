@@ -5,8 +5,9 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum SubscriptionError {
     #[error("Invalid email")]
-    InvalidEmail
-    
+    InvalidEmail,
+    #[error("Email addresse already subscribed")]
+    EmailSubscribed,
 }
 impl SubscriptionError {
     /// Converts the error to an axum JSON representation.
