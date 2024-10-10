@@ -1,2 +1,2 @@
-mod authentication;
-mod errors;
+pub mod authentication;
+pub mod errors;
