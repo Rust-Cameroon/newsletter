@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.7.7"
+axum = { version = "0.7.7", features = ["macros"] }
 diesel = { version = "2.2.4", features = ["postgres"] }
+diesel-async = { version = "0.5.0", features = ["postgres", "deadpool"] }
 dotenvy = "0.15.7"
 letter = "0.0.0"
 lettre = "0.11.9"
@@ -13,4 +14,5 @@ lettre_email = "0.9.4"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 thiserror = "1.0.64"
+tokio = { version = "1.40.0", features = ["full", "rt"] }
 totp-rs = "5.6.0"

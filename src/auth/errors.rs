@@ -1,3 +1,5 @@
+use std::error;
+
 use axum::Json;
 use serde_json::{json, Value};
 use thiserror::Error;
@@ -8,6 +10,12 @@ pub enum SubscriptionError {
     InvalidEmail,
     #[error("Email addresse already subscribed")]
     EmailSubscribed,
+    #[error("Invalid Code")]
+    InvalidCode,
+    #[error("Internal Error")]
+    InternalError,
+    #[error("Error storing subscruber")]
+    DatabaseError
 }
 impl SubscriptionError {
     /// Converts the error to an axum JSON representation.
