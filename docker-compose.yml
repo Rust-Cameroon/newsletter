@@ -1,0 +1,10 @@
+version: '3.8'  # Version of Docker Compose
+services:
+  postgres:
+    image: postgres:latest
+    container_name: newsletter
+    ports:
+      - "5433:5432"   # Host Port:Container Port
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+ 
