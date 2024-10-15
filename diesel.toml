@@ -6,4 +6,4 @@ file = "src/database/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/home/christian/Downloads/Newletter/src/database"
+dir = "/home/christian/Videos/Newsletter/src/database"

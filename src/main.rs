@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use axum::{
     response::IntoResponse,
     routing::{get, post},
@@ -16,8 +18,10 @@ async fn welcome() -> impl IntoResponse {
 #[tokio::main]
 async fn main() {
     let db_connection = establish_connection().await;
+
     let otp = new_otp();
-    let email = String::new();
+
+    let email = Arc::new(Mutex::new(String::new()));
     let code = EmailOtp { code: otp };
     let listener = TcpListener::bind("0.0.0.0:8000").await.unwrap();
     let router = Router::new()
