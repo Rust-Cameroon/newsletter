@@ -1,3 +1,5 @@
+import Body from "./body";
+
 export function Navbar() {
     return (
         <>
@@ -42,13 +44,20 @@ export function Navbar() {
                     <div className="flex justify-center items-center text-white text-xl max-w-prose">
                         <div className="card-body">
                             <h2 className="card-title">Card title!</h2>
-                            <p>If a dog chews shoes whose shoes does he choose?Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum veritatis, iste voluptatibus fugit earum, exercitationem consequuntur neque quasi praesentium officiis commodi, provident eaque sed. Reprehenderit adipisci, minima, molestiae aut soluta necessitatibus molestias laudantium ullam praesentium, rem eligendi optio tenetur suscipit sapiente! Laboriosam nam reprehenderit velit quos nisi nemo necessitatibus sit!</p>
-
+                            <p>If a dog chews shoes whose shoes does he choose?Lorem ipsum dolor sit amet. sit!</p>
+                            <div className="mt-10">
+                                <input
+                                    type="email"
+                                    placeholder="Type here"
+                                    className="input input-bordered input-info w-full max-w-xs bg-gray-700 btn rounded-none px-16" />
+                                <button className="btn btn-info rounded-none px-16">SUBSCRIBE NOW</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-
+                <Body/>
             </nav>
+
 
         </>
     )
