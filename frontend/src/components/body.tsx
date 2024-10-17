@@ -8,21 +8,16 @@ export default function Body() {
             "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"]);
     return (
         <>
-         
-                <div className="card bg-neutral-700 dark:bg-black-700">
-                    <figure>
-                        <img
-                            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp0"
-                            alt="Shoes"/>
-                    </figure>
-                    <div className="card-body">
-                        <h2 className="card-title">Shoes!</h2>
-                        <p>If a dog chews shoes whose shoes does he choose?</p>
-                        <div className="card-actions justify-end">
-                        </div>
-                    </div>
-                </div>
-            
+
+            <body className="grid bg-gray-700 grid-cols-4 gap-4">
+                <div className="grid bg-blue-900">01</div>
+                <div>2</div>
+                <video width="320" height="240" controls></video>
+                <div>2</div>
+                <div>3</div>
+                <div>6</div>
+                <div className="grid bg-blue-900">09</div>
+            </body>
 
         </>
     )
