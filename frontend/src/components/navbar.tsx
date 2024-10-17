@@ -1,4 +1,5 @@
 import Body from "./body";
+import Footer from "./footer";
 import { SignupForm } from "./subscription";
 
 export function Navbar() {
@@ -51,8 +52,9 @@ export function Navbar() {
                         </div>
                     </div>
                 </div>
-                <Body />
+                
             </nav>
+         
 
 
         </>

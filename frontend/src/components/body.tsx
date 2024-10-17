@@ -8,12 +8,12 @@ export default function Body() {
             "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"]);
     return (
         <>
-            {Posts.forEach(post => {
-                <div className="card bg-base-100 w-96 shadow-xl">
+         
+                <div className="card bg-neutral-700 dark:bg-black-700">
                     <figure>
                         <img
-                            src={post}
-                            alt="Shoes" />
+                            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp0"
+                            alt="Shoes"/>
                     </figure>
                     <div className="card-body">
                         <h2 className="card-title">Shoes!</h2>
@@ -22,8 +22,7 @@ export default function Body() {
                         </div>
                     </div>
                 </div>
-            })
-            }
+            
 
         </>
     )
