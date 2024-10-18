@@ -6,7 +6,7 @@ export function Navbar() {
             <nav className="navi scroll-smooth bg-neutral-800 dark:bg-black-700 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 ">
                     <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-                        <img src="../src/assets/rustcm.png" className="h-20" alt="Rust Cameroon Logo" />
+                        <img src="../src/assets/rustcm.svg" className="h-20" alt="Rust Cameroon Logo" />
                         <span className="self-center text-2l font-semibold whitespace-nowrap dark:text-white font-mono">Rust Cameroon</span>
                     </a>
                     <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -42,9 +42,8 @@ export function Navbar() {
                 <div className="flex justify-center">
                     <div className="flex justify-center items-center text-white text-xl max-w-prose">
                         <div className="card-body">
-                            <h2 className="card-title">Card title!</h2>
-                            <p>If a dog chews shoes whose shoes does he choose?Lorem ipsum dolor sit amet. sit!lorem50
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam distinctio voluptate rem, debitis incidunt at mollitia corporis amet dolorem dignissimos reiciendis neque saepe nisi. Vel quod, non nemo quas ratione veniam deserunt voluptatem expedita placeat natus molestiae ullam tempora accusantium similique? Deserunt blanditiis ratione itaque quibusdam error nisi voluptates alias eum eligendi incidunt? Vitae, a ipsam minima exercitationem aliquid consequuntur.
+                            <h2 className="card-title">Welcome to Rust Cameroon!</h2>
+                            <p>We're building a vibrant, inclusive, and passionate Rust community right here in Cameroon. Whether you're a seasoned Rustacean or just starting your journey, you're in the right place. Our mission is to promote the use of Rust, foster collaboration, and empower developers through learning and sharing. Join us as we explore the possibilities Rust offers, from systems programming to web development, embedded systems, and beyond. Through meetups, workshops, and events, we aim to connect Rust enthusiasts, share knowledge, and build amazing projects together.
                             </p>
                             <div className="mt-12">
                                 <SignupForm />
