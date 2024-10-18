@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useFormik } from 'formik';
 
 export const SignupForm = () => {
@@ -7,8 +8,10 @@ export const SignupForm = () => {
         initialValues: {
             email: '',
         },
-        onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+        onSubmit: value => {
+          axios.post("http://localhost:8000/subscribe", {
+            email: value
+          })
         },
     });
     return (
@@ -16,7 +19,7 @@ export const SignupForm = () => {
             <input
                 id="email"
                 name="email"
-                className='input input-bordered input-accentcolor w-full max-w-xs btn rounded-none px-16'
+                className='input input-bordered input-accentcolor w-full max-w-xs btn rounded-none px-16 ml-10'
                 placeholder='example@gmail.com'
                 type="email"
                 onChange={formik.handleChange}

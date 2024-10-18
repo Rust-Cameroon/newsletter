@@ -10,7 +10,7 @@ export function Navbar() {
                         <span className="self-center text-2l font-semibold whitespace-nowrap dark:text-white font-mono">Rust Cameroon</span>
                     </a>
                     <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                        <button type="button" className="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-7 py-2.5 text-center bg-customPink-500">Subscribe To Rust Cameroon</button>
+                        <button type="button" className="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-7 py-2.5 text-center bg-customPink-500 hover:text-customPink-700">Subscribe To Rust Cameroon</button>
 
                     </div>
                     <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
@@ -42,8 +42,8 @@ export function Navbar() {
                 <div className="flex justify-center">
                     <div className="flex justify-center items-center text-white text-xl max-w-prose">
                         <div className="card-body">
-                            <h2 className="card-title">Welcome to Rust Cameroon!</h2>
-                            <p>We're building a vibrant, inclusive, and passionate Rust community right here in Cameroon. Whether you're a seasoned Rustacean or just starting your journey, you're in the right place. Our mission is to promote the use of Rust, foster collaboration, and empower developers through learning and sharing. Join us as we explore the possibilities Rust offers, from systems programming to web development, embedded systems, and beyond. Through meetups, workshops, and events, we aim to connect Rust enthusiasts, share knowledge, and build amazing projects together.
+                            <h2 className="text-center font-mono font-bold text-2xl">Welcome to Rust Cameroon!👋</h2>
+                            <p className="font-mono text-md text-sans text-justify">We're building a vibrant, inclusive, and passionate Rust community right here in Cameroon. Whether you're a seasoned Rustacean or just starting your journey, you're in the right place. Our mission is to promote the use of Rust, foster collaboration, and empower developers through learning and sharing. Join us as we explore the possibilities Rust offers, from systems programming to web development, embedded systems, and beyond. Through meetups, workshops, and events, we aim to connect Rust enthusiasts, share knowledge, and build amazing projects together.
                             </p>
                             <div className="mt-12">
                                 <SignupForm />
