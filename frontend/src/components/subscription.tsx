@@ -16,13 +16,13 @@ export const SignupForm = () => {
             <input
                 id="email"
                 name="email"
-                className='input input-bordered input-info w-full max-w-xs btn rounded-none px-16'
+                className='input input-bordered input-accentcolor w-full max-w-xs btn rounded-none px-16'
                 placeholder='example@gmail.com'
                 type="email"
                 onChange={formik.handleChange}
                 value={formik.values.email}
             />
-            <button className="btn btn-secondary rounded-none px-9 ">SUBSCRIBE NOW</button>
+            <button className="btn bg-customPink-500 hover:bg-customPink-700 rounded-none px-9 border-accentcolor">SUBSCRIBE NOW</button>
         </form>
     );
 };

@@ -1,24 +1,40 @@
-import { useState } from "react";
-
-export default function Body() {
-    const [Posts, setPost] = useState(
-        [
-            "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp0",
-            "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-            "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"]);
+function BgColorExample() {
     return (
         <>
+        <h2 className="font-mono font-semibold text-2xl btn bg-accentcolor mb-5 hover:bg-accentcolor">Recent</h2>
+            <div className="grid grid-cols-3 gap-4">
+                {[
+                    'Primary',
+                    'Secondary',
+                    'Success',
+                    'Danger',
+                    'Warning',
+                    'Info',
+                    'Light',
+                    'Dark',
 
-            <body className="grid bg-gray-700 grid-cols-4 gap-4">
-                <div className="grid bg-blue-900">01</div>
-                <div>2</div>
-                <video width="320" height="240" controls></video>
-                <div>2</div>
-                <div>3</div>
-                <div>6</div>
-                <div className="grid bg-blue-900">09</div>
-            </body>
-
+                ].map((variant) => (            
+                    <div className="card card-compact bg-base-100 w-96 shadow-2xl hover:shadow-md">
+                        <figure>
+                            <img
+                                src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                                alt="Shoes" />
+                        </figure>
+                        <a href="https://medium.com/@yemelechristian2/didcomm-messaging-vs-email-messaging-b98a3e116c82">
+                        <div className="card-body" >
+                            <h2 className="card-title">Shoes!</h2>
+                            <p>If a dog chews shoes whose shoes does he choose?</p>
+                            <div className="card-actions justify-end">
+                                <button className="btn btn-primary">Buy Now</button>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                
+                ))}
+            </div>
         </>
-    )
+    );
 }
+
+export default BgColorExample;

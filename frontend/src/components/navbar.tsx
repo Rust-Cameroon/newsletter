@@ -1,37 +1,35 @@
-import Body from "./body";
-import Footer from "./footer";
 import { SignupForm } from "./subscription";
 
 export function Navbar() {
     return (
         <>
-            <nav className="bg-neutral-700 dark:bg-black-700 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
+            <nav className="navi scroll-smooth bg-neutral-800 dark:bg-black-700 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 ">
                     <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
                         <img src="../src/assets/rustcm.png" className="h-20" alt="Rust Cameroon Logo" />
-                        <span className="self-center text-2l font-semibold whitespace-nowrap dark:text-white">Rust Cameroon</span>
+                        <span className="self-center text-2l font-semibold whitespace-nowrap dark:text-white font-mono">Rust Cameroon</span>
                     </a>
                     <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-base px-7 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-secondary-700 dark:focus:ring-blue-800">Subscribe To Rust Cameroon</button>
+                        <button type="button" className="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-7 py-2.5 text-center bg-customPink-500">Subscribe To Rust Cameroon</button>
 
                     </div>
                     <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-                        <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border md:space-x-9 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-700 flex">
+                        <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border md:space-x-9 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-neutral-800 flex">
 
                             <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold">Articles</a>
+                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-customPink-500 md:p-0 md:dark:hover:text-customPink-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold font-mono">Articles</a>
                             </li>
                             <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold">Events</a>
+                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-customPink-500 md:p-0 md:dark:hover:text-customPink-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold font-mono">Events</a>
                             </li>
                             <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold">Archives</a>
+                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-customPink-500 md:p-0 md:dark:hover:text-customPink-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold font-mono">Archives</a>
                             </li>
                             <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold">Jobs</a>
+                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-customPink-500 md:p-0 md:dark:hover:text-customPink-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold font-mono">Jobs</a>
                             </li>
                             <li>
-                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold">Contact</a>
+                                <a href="#" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-customPink-500 md:p-0 md:dark:hover:text-customPink-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 text-xl font-semibold hover:font-bold font-mono">Contact</a>
                             </li>
                         </ul>
                     </div>
@@ -45,16 +43,18 @@ export function Navbar() {
                     <div className="flex justify-center items-center text-white text-xl max-w-prose">
                         <div className="card-body">
                             <h2 className="card-title">Card title!</h2>
-                            <p>If a dog chews shoes whose shoes does he choose?Lorem ipsum dolor sit amet. sit!</p>
-                            <div className="mt-10">
-                              <SignupForm/>
+                            <p>If a dog chews shoes whose shoes does he choose?Lorem ipsum dolor sit amet. sit!lorem50
+                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam distinctio voluptate rem, debitis incidunt at mollitia corporis amet dolorem dignissimos reiciendis neque saepe nisi. Vel quod, non nemo quas ratione veniam deserunt voluptatem expedita placeat natus molestiae ullam tempora accusantium similique? Deserunt blanditiis ratione itaque quibusdam error nisi voluptates alias eum eligendi incidunt? Vitae, a ipsam minima exercitationem aliquid consequuntur.
+                            </p>
+                            <div className="mt-12">
+                                <SignupForm />
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
             </nav>
-         
+
 
 
         </>
