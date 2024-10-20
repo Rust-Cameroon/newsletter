@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <body className='scroll-smooth'>
       <Navbar />
-      <main className='flex-grow main'>
+      <main className='flex-grow main '>
         <Body />
       </main>
     </body>

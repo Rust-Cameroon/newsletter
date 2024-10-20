@@ -41,11 +41,11 @@ export function Navbar() {
                 </div>
                 <div className="flex justify-center">
                     <div className="flex justify-center items-center text-white text-xl max-w-prose">
-                        <div className="card-body">
+                        <div className="card-body align-items-center">
                             <h2 className="text-center font-mono font-bold text-2xl">Welcome to Rust Cameroon!👋</h2>
                             <p className="font-mono text-md text-sans text-justify">We're building a vibrant, inclusive, and passionate Rust community right here in Cameroon. Whether you're a seasoned Rustacean or just starting your journey, you're in the right place. Our mission is to promote the use of Rust, foster collaboration, and empower developers through learning and sharing. Join us as we explore the possibilities Rust offers, from systems programming to web development, embedded systems, and beyond. Through meetups, workshops, and events, we aim to connect Rust enthusiasts, share knowledge, and build amazing projects together.
                             </p>
-                            <div className="mt-12">
+                            <div className="mt-12 grid justify-content-center">
                                 <SignupForm />
                             </div>
                         </div>

@@ -1,8 +1,8 @@
 .main {
+  display: grid;
+  justify-content: center;
   margin-top: 15em;
-  margin-left: 20em;
-  margin-right: 7em;
-  position: relative;
+
 }
 .navi {
   position: relative;

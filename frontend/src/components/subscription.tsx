@@ -9,23 +9,29 @@ export const SignupForm = () => {
             email: '',
         },
         onSubmit: value => {
-          axios.post("http://localhost:8000/subscribe", {
-            email: value
-          })
+            axios.post("http://localhost:8000/subscribe", {
+                email: value
+            })
         },
     });
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <input
-                id="email"
-                name="email"
-                className='input input-bordered input-accentcolor w-full max-w-xs btn rounded-none px-16 ml-10'
-                placeholder='example@gmail.com'
-                type="email"
-                onChange={formik.handleChange}
-                value={formik.values.email}
-            />
-            <button className="btn bg-customPink-500 hover:bg-customPink-700 rounded-none px-9 border-accentcolor">SUBSCRIBE NOW</button>
-        </form>
+        <div className='grid grid-cols-1 lg:grid-cols-2 justify-center justify-stretch rounded-full'>
+            <div>
+                <form onSubmit={formik.handleSubmit}>
+                    <input
+                        id="email"
+                        name="email"
+                        className='input border-white btn w-full'
+                        placeholder='example@gmail.com'
+                        type="email"
+                        onChange={formik.handleChange}
+                        value={formik.values.email}
+                    />
+                </form>
+            </div>
+            <div>
+                <button className="btn bg-customPink-500 hover:bg-customPink-700 w-full border-white">SUBSCRIBE NOW</button>
+            </div>
+        </div>
     );
 };
