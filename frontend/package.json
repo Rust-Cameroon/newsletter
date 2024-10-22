@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite \" \"cargo run \"",
-    "build": "concurrently \"tsc -b && vite build\" \"cargo build\"",
+    "build": "concurrently \"tsc -b && vite build \" \"cargo build\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
