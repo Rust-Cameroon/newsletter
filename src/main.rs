@@ -12,7 +12,7 @@ use newsletter::{
     web::subscribe::{post_subscribe, post_verify_email, EmailOtp},
 };
 use tokio::net::TcpListener;
-use tower::{layer, ServiceBuilder};
+use tower::ServiceBuilder;
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -23,18 +23,18 @@ async fn welcome() -> impl IntoResponse {
 }
 #[tokio::main]
 async fn main() {
-    
     tracing_subscriber::fmt()
-    .with_max_level(tracing::Level::DEBUG)
-    .init();
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
 
     let db_connection = establish_connection().await;
 
     let otp = new_otp();
 
     let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin(Any);
+        .allow_methods(Any)
+        .allow_origin(Any)
+        .allow_headers(Any);
 
     let email = Arc::new(Mutex::new(String::new()));
     let code = EmailOtp { code: otp };
@@ -46,10 +46,10 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
+                .layer(cors)
                 .layer(Extension(email))
                 .layer(Extension(code))
-                .layer(Extension(db_connection))
-                .layer(cors),
+                .layer(Extension(db_connection)),
         );
     axum::serve(listener, router).await.unwrap();
 }

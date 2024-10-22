@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import { useFormik } from 'formik';
 
 export const SignupForm = () => {
@@ -9,11 +9,23 @@ export const SignupForm = () => {
             email: '',
         },
         onSubmit: value => {
-            axios.post("http://localhost:8000/subscribe", {
-                email: value
+            fetch('http://localhost:8000/subscribe', {
+                method: 'POST',
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    email: value.email
+
+                })
             })
+                .then(response => response.json())
+                .then(data => console.log(data));
         },
-    });
+    })
     return (
         <div className='grid grid-cols-1 lg:grid-cols-2 justify-center justify-stretch rounded-full'>
             <div>
@@ -30,8 +42,11 @@ export const SignupForm = () => {
                 </form>
             </div>
             <div>
-                <button className="btn bg-customPink-500 hover:bg-customPink-700 w-full border-white">SUBSCRIBE NOW</button>
+                <a href='/input'>
+                <button onClick={formik.handleSubmit} className="btn bg-customPink-500 hover:bg-customPink-700 w-full border-white">SUBSCRIBE NOW</button>  
+                </a>
             </div>
         </div>
     );
 };
+

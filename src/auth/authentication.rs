@@ -27,11 +27,11 @@ pub async fn subscriber_validation(
 pub fn new_otp() -> String {
     Otp::generate_new()
 }
-pub fn send_otp(otp: String, email: &String) -> Result<StatusCode, StatusCode> {
+pub fn send_otp(otp: String, email: &String) -> Result<StatusCode, SubscriptionError> {
     let email = Message::builder()
         .from("yemelechristian2@gmail.com".parse().unwrap())
         .reply_to("to@example.com".parse().unwrap())
-        .to(email.parse().unwrap())
+        .to(email.parse().map_err(|_| SubscriptionError::InvalidEmail)?)
         .subject("Rust Email")
         .body(otp)
         .unwrap();
@@ -46,7 +46,7 @@ pub fn send_otp(otp: String, email: &String) -> Result<StatusCode, StatusCode> {
         .build();
     match mailer.send(&email) {
         Ok(_) => Ok(StatusCode::OK),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        Err(_) => Err(SubscriptionError::MailError),
     }
 }
 
