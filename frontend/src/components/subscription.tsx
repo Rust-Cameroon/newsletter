@@ -1,5 +1,6 @@
 
 import { useFormik } from 'formik';
+import { FormEvent, MouseEventHandler } from 'react';
 
 export const SignupForm = () => {
     // Pass the useFormik() hook initial form values and a submit function that will
@@ -22,7 +23,7 @@ export const SignupForm = () => {
 
                 })
             })
-                .then(response => response.json())
+                .then(response => alert(response.text()))
                 .then(data => console.log(data));
         },
     })
@@ -42,9 +43,11 @@ export const SignupForm = () => {
                 </form>
             </div>
             <div>
-                <a href='/input'>
-                <button onClick={formik.handleSubmit} className="btn bg-customPink-500 hover:bg-customPink-700 w-full border-white">SUBSCRIBE NOW</button>  
-                </a>
+                <button onClick={(e) => {
+                    e.preventDefault();
+                    formik.handleSubmit();
+                }} className="btn bg-customPink-500 hover:bg-customPink-700 w-full border-white">SUBSCRIBE NOW</button>
+
             </div>
         </div>
     );

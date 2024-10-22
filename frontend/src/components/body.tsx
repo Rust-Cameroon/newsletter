@@ -14,12 +14,12 @@ function Body() {
                     'Light',
                     'Dark',
 
-                ].map((variant) => (
+                ].map(() => (
                     <div className="card card-compact bg-base-100 w-96 shadow-2xl hover:shadow-md self-center">
                         <figure>
                             <img
                                 src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                                alt="Shoes" />
+                                alt="POSTS" />
                         </figure>
                         <a href="https://medium.com/@yemelechristian2/didcomm-messaging-vs-email-messaging-b98a3e116c82">
                             <div className="card-body" >
