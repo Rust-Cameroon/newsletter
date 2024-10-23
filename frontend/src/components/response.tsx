@@ -1,6 +1,4 @@
-interface Props {
-    data: string
-}
+
 export default function Response(res: string) {
     return (
         <>

@@ -1,22 +1,19 @@
-import React from 'react';
+
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+
 import OtpInput from 'formik-otp-input';
 
-const YOUR_OTP_LENGTH = 6; // Replace this with the length of your OTP
 
 
 // CSS Styles, adjust according to your needs
-const formStyle = {
+const formStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: '20px',
 };
 
-const fieldStyle = {
-    margin: '10px 0',
-};
+
 
 const errorTextStyle = {
     marginTop: '15px',

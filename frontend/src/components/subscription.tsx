@@ -30,7 +30,7 @@ export const SignupForm = () => {
                 .then(response => response.text())
                 .then(data => Response(data))
                 
-               .then(res => navigate('/email_verification'));
+               .then(()=> navigate('/email_verification'));
             
         },
     })
