@@ -12,7 +12,7 @@ export const SignupForm = () => {
             email: '',
         },
         onSubmit: value => {
-            fetch('http://localhost:8000/subscribe', {
+           fetch('http://localhost:8000/subscribe', {
                 method: 'POST',
                 headers: {
 
@@ -25,8 +25,11 @@ export const SignupForm = () => {
 
                 })
             })
-                .then(response => alert(response.json()));
-               navigate('/email_verification');
+                
+                .then(response => response.text())
+                .then(data => alert(data))
+                
+               .then(res => navigate('/email_verification'));
             
         },
     })

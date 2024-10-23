@@ -43,9 +43,20 @@ const OtpForm = () => {
             // ... other form fields if you wish
         },
         onSubmit: (values) => {
-            console.log('Form data:', values);
-            window.alert(`Submitted otp value = ${values.otp}`);
-            // Perform submission actions
+          
+            fetch('http://localhost:8000/verify_otp', {
+                method: 'POST',
+                headers: {
+
+                    'Content-Type': 'application/json',
+
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    code: values.otp
+
+                })
+            })
         },
     });
 
