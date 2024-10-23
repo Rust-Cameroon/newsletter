@@ -1,6 +1,7 @@
 
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import Response from './response';
 
 
 export const SignupForm = () => {
@@ -27,7 +28,7 @@ export const SignupForm = () => {
             })
                 
                 .then(response => response.text())
-                .then(data => alert(data))
+                .then(data => Response(data))
                 
                .then(res => navigate('/email_verification'));
             
