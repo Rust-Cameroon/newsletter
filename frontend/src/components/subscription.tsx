@@ -1,8 +1,10 @@
 
 import { useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 
 
 export const SignupForm = () => {
+    const navigate = useNavigate();
     // Pass the useFormik() hook initial form values and a submit function that will
     // be called when the form is submitted
     const formik = useFormik({
@@ -23,8 +25,9 @@ export const SignupForm = () => {
 
                 })
             })
-                .then(response => alert(response.text()))
-                .then(data => console.log(data));
+                .then(response => alert(response.json()));
+               navigate('/email_verification');
+            
         },
     })
     return (
@@ -43,6 +46,7 @@ export const SignupForm = () => {
                 </form>
             </div>
             <div>
+
                 <button onClick={(e) => {
                     e.preventDefault();
                     formik.handleSubmit();
