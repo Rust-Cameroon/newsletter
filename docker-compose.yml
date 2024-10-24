@@ -10,8 +10,8 @@ services:
 
   backend:
     build:
-      context: ./dockerfile # Path to the backend Dockerfile
-    container_name: my_backend
+      context: . # Path to the backend Dockerfile
+    container_name: backend
     ports:
       - "8000:8000"  # Adjust if your backend uses a different port
     environment:
