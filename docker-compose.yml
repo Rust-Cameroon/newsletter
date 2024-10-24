@@ -4,19 +4,40 @@ services:
     image: postgres:latest
     container_name: newsletter
     ports:
-      - "5434:5432"   # Host Port:Container Port
+      - "5434:5432"  # Host Port:Container Port
     environment:
       POSTGRES_PASSWORD: mysecretpassword
 
-  minio:
-    image: minio/minio
-    container_name: minio
+  backend:
+    build:
+      context: ./dockerfile # Path to the backend Dockerfile
+    container_name: my_backend
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - "8000:8000"  # Adjust if your backend uses a different port
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - ~/minio/data:/data
-    command: server /data --console-address ":9090"
+      DATABASE_URL: postgres://postgres:mysecretpassword@newsletter:5432/postgres
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend # Path to the frontend Dockerfile
+    container_name: my_frontend
+    ports:
+      - "5173:5173"  # Adjust if your frontend uses a different port
+    depends_on:
+      - backend
+
+
+  # minio:
+  #   image: minio/minio
+  #   container_name: minio
+  #   ports:
+  #     - "9000:9000"
+  #     - "9090:9090"
+  #   environment:
+  #     MINIO_ROOT_USER: minioadmin
+  #     MINIO_ROOT_PASSWORD: minioadmin
+  #   volumes:
+  #     - ~/minio/data:/data
+  #   command: server /data --console-address ":9090"
