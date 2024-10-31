@@ -16,8 +16,8 @@ pub async fn subscriber_validation(
         Err(SubscriptionError::InvalidEmail)?
     }
     if get_subscriber(connection, &email)
-        .await.unwrap().is_some()
-     
+        .await
+        .is_ok_and(|subscriber| subscriber.is_some())
     {
         Err(SubscriptionError::EmailSubscribed)?
     } else {

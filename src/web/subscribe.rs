@@ -1,9 +1,17 @@
-use std::time::SystemTimeError;
+use std::{
+    borrow::Borrow,
+    f32::consts::E,
+    sync::{Arc, Mutex},
+    time::SystemTimeError,
+};
 
 use axum::{
-    debug_handler, http::StatusCode, response::{IntoResponse, Redirect, Response}, Extension, Json
+    debug_handler,
+    http::StatusCode,
+    response::{IntoResponse, Redirect, Response},
+    Extension, Json,
 };
-use serde::Deserialize;
+use serde::{de::value::EnumAccessDeserializer, Deserialize};
 
 use crate::{
     auth::authentication::{auth_verify_otp, send_otp, subscriber_validation},
@@ -20,10 +28,10 @@ pub struct Subscription {
 pub struct EmailOtp {
     pub code: String,
 }
-
+#[axum::debug_handler]
 pub async fn post_subscribe(
     Extension(otp): Extension<EmailOtp>,
-    Extension(mut email): Extension<String>,
+    Extension(email): Extension<Arc<Mutex<String>>>,
     mut database: Extension<Database>,
     Json(subscriber): Json<Subscription>,
 ) -> impl IntoResponse {
@@ -31,9 +39,9 @@ pub async fn post_subscribe(
         Ok(_) => {
             let _ = send_otp(otp.code, &subscriber.email).into_response();
 
-            email.clear();
-            email.push_str(&subscriber.email);
-            //    let _ = Redirect::to("/verify_otp");
+            *email.lock().unwrap() = subscriber.email;
+
+            let _ = Redirect::to("/verify_otp");
             StatusCode::ACCEPTED.into_response()
         }
         Err(e) => error_page(&e).into_response(),
@@ -42,10 +50,11 @@ pub async fn post_subscribe(
 #[axum::debug_handler]
 pub async fn post_verify_email(
     mut database: Extension<Database>,
-    email: Extension<String>,
+    email: Extension<Arc<Mutex<String>>>,
     otp: Json<EmailOtp>,
 ) -> impl IntoResponse {
-    match auth_verify_otp(otp.code.clone(), &mut database, email.0).await {
+    let email = email.0.lock().unwrap().clone();
+    match auth_verify_otp(otp.code.clone(), &mut database, email).await {
         Ok(_) => StatusCode::ACCEPTED.into_response(),
         Err(e) => e.json().into_response(),
     }
