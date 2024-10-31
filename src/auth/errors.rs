@@ -1,5 +1,3 @@
-use std::error;
-
 use axum::Json;
 use serde_json::{json, Value};
 use thiserror::Error;
@@ -15,7 +13,9 @@ pub enum SubscriptionError {
     #[error("Internal Error")]
     InternalError,
     #[error("Error storing subscruber")]
-    DatabaseError
+    DatabaseError,
+    #[error("could not send otp")]
+    MailError
 }
 impl SubscriptionError {
     /// Converts the error to an axum JSON representation.

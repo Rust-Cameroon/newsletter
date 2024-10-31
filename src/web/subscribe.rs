@@ -1,21 +1,17 @@
-use std::{
-    borrow::Borrow,
-    f32::consts::E,
-    sync::{Arc, Mutex},
-    time::SystemTimeError,
-};
+use std::
+    sync::{Arc, Mutex}
+;
 
 use axum::{
-    debug_handler,
     http::StatusCode,
-    response::{IntoResponse, Redirect, Response},
+    response::{IntoResponse, Redirect},
     Extension, Json,
 };
-use serde::{de::value::EnumAccessDeserializer, Deserialize};
+use serde::Deserialize;
 
 use crate::{
     auth::authentication::{auth_verify_otp, send_otp, subscriber_validation},
-    database::queries::{subscribe, Database, Otp},
+    database::queries::Database,
 };
 
 use super::errors::error_page;
@@ -37,7 +33,7 @@ pub async fn post_subscribe(
 ) -> impl IntoResponse {
     match subscriber_validation(&mut database, &subscriber.email).await {
         Ok(_) => {
-            let _ = send_otp(otp.code, &subscriber.email).into_response();
+            let _ = send_otp(otp.code, &subscriber.email);
 
             *email.lock().unwrap() = subscriber.email;
 
