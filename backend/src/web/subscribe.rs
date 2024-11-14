@@ -1,5 +1,5 @@
-use std::
-    sync::{Arc, Mutex}
+use std::{
+    sync::{Arc, Mutex}, vec}
 ;
 
 use axum::{
@@ -36,7 +36,6 @@ pub async fn post_subscribe(
             let _ = send_otp(otp.code, &subscriber.email);
 
             *email.lock().unwrap() = subscriber.email;
-
             let _ = Redirect::to("/verify_otp");
             StatusCode::ACCEPTED.into_response()
         }

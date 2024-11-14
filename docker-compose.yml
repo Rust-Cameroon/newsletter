@@ -10,7 +10,7 @@ services:
 
   backend:
     build:
-      context: . # Path to the backend Dockerfile
+      context: ./backend # Path to the backend Dockerfile
     container_name: backend
     ports:
       - "8000:8000"  # Adjust if your backend uses a different port
@@ -22,9 +22,9 @@ services:
   frontend:
     build:
       context: ./frontend # Path to the frontend Dockerfile
-    container_name: my_frontend
+    container_name: frontend
     ports:
-      - "5173:5173"  # Adjust if your frontend uses a different port
+      - "8080:80"  # Adjust if your frontend uses a different port
     depends_on:
       - backend
 
