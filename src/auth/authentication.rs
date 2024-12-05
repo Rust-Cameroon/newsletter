@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use axum::{
     http::{Response, StatusCode},
     response::IntoResponse,
