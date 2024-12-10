@@ -31,60 +31,50 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.frontend}}
+        - name: {{ .Chart.Name }}-backend
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.backend-repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.backend_repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port1 }}
               protocol: TCP
-          {% comment %} livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }} {% endcomment %}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
-        - name: {{ .Chart.backend }}
-            securityContext:
-              {{- toYaml .Values.securityContext | nindent 12 }}
-            image: "{{ .Values.image.frontend-repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-            imagePullPolicy: {{ .Values.image.pullPolicy }}
-            ports:
-              - name: http
-                containerPort: {{ .Values.service.port2 }}
-                protocol: TCP
-            {% comment %} livenessProbe:
-              {{- toYaml .Values.livenessProbe | nindent 12 }}
-            readinessProbe:
-              {{- toYaml .Values.readinessProbe | nindent 12 }} {% endcomment %}
-            resources:
-              {{- toYaml .Values.resources | nindent 12 }}
-            {{- with .Values.volumeMounts }}
-            volumeMounts:
-              {{- toYaml . | nindent 12 }}
-        - name: {{ .Chart.database }}
-              securityContext:
-                {{- toYaml .Values.securityContext | nindent 12 }}
-              image: "{{ .Values.image.database-repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-              imagePullPolicy: {{ .Values.image.pullPolicy }}
-              ports:
-                - name: http
-                  containerPort: {{ .Values.service.port3 }}
-                  protocol: TCP
-              {% comment %} livenessProbe:
-                {{- toYaml .Values.livenessProbe | nindent 12 }}
-              readinessProbe:
-                {{- toYaml .Values.readinessProbe | nindent 12 }} {% endcomment %}
-              resources:
-                {{- toYaml .Values.resources | nindent 12 }}
-              {{- with .Values.volumeMounts }}
-              volumeMounts:
-                {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: {{ .Chart.Name }}-frontend
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.frontend_repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port2 }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: {{ .Chart.Name }}-database
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.database_repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port3 }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.volumes }}
       volumes:
