@@ -18,12 +18,8 @@ spec:
           ports:
             - containerPort: 5432
           env: # Moved env inside the container spec
-            - name: POSTGRES_DB
-              value: db0
-            - name: POSTGRES_USER
-              value: christian
             - name: POSTGRES_PASSWORD
-              value: christian
+              value: mysecretpassword
           volumeMounts: # Corrected indentation
             - name: {{ .Release.Name }}-postgresql-persistent-storage
               mountPath: {{ .Values.postgresqlVolume.mountPath }}

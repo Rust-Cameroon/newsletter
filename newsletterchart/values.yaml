@@ -5,13 +5,13 @@ postgresql:
 
 backend:
   image:
-    repository: newsletter-k8s_backend
+    repository: ghcr.io/rust-cameroon/newsletter-k8s_backend
     pullPolicy: IfNotPresent
     tag: latest
 
 frontend:
   image:
-    repository: newsletter-k8s_frontend
+    repository: ghcr.io/rust-cameroon/newsletter-k8s_frontend
     pullPolicy: IfNotPresent
     tag: latest
 

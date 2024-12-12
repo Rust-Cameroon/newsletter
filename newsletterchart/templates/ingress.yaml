@@ -15,6 +15,6 @@ spec:
             pathType: Prefix
             backend: # Corrected `frontend` to `backend`
               service:
-                name: frontend
+                name: {{ .Release.Name }}-frontend
                 port:
                   number: 5173

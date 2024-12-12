@@ -1,5 +1,4 @@
 use std::sync::{Arc, Mutex};
-
 use axum::{
     http::Method,
     response::IntoResponse,
