@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newsletter-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/" # Rewrite paths if necessary
+spec:
+  ingressClassName: nginx # Specifies the NGINX Ingress Controller
+  rules:
+    - host: rustnews.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: # Corrected `frontend` to `backend`
+              service:
+                name: {{ .Release.Name }}-frontend
+                port:
+                  number: 5173

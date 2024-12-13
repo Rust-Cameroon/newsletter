@@ -1,0 +1,27 @@
+replicaCount: 1
+
+postgresql:
+  databaseName: postgresql
+
+backend:
+  image:
+    repository: ghcr.io/rust-cameroon/newsletter-k8s_backend
+    pullPolicy: IfNotPresent
+    tag: latest
+
+frontend:
+  image:
+    repository: ghcr.io/rust-cameroon/newsletter-k8s_frontend
+    pullPolicy: IfNotPresent
+    tag: latest
+
+postgresqlVolume:
+  persistentVolumeClaim:
+    storageSize: 1Gi  
+
+  persistentVolume:
+    storageSize: 1Gi  
+    pathOnHost: /var/lib/postgresql 
+
+
+  mountPath: /var/lib/postgresql 

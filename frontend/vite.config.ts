@@ -1,7 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import { createProductionServerPlugin } from "vite-create-production-server-plugin";
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+  plugins: [
+    createProductionServerPlugin({
+      port: 3000, // Optional, default is 8080
+      entryPoint: "index.html", // Optional, default is "index.html"
+      buildDirectory: "dist", // Optional, default is "dist"
+    }),
+  ],
+});
