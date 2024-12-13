@@ -8,7 +8,7 @@ on:
       - 'v*'
 
 env:
-  BACKEND_IMAGE: newsletter-k8s_backendv2
+  BACKEND_IMAGE: newsletter-k8s_backend
   FRONTEND_IMAGE: newsletter-k8s_frontend
 
 jobs:
