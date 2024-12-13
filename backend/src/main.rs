@@ -37,7 +37,9 @@ async fn main() {
 
     let email = Arc::new(Mutex::new(String::new()));
     let code = EmailOtp { code: otp };
-    let listener = TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    let port = 8080;
+    let socket = format!("0.0.0.0,{}",port);
+    let listener = TcpListener::bind(socket).await.unwrap();
     let router = Router::new()
         .route("/", get(welcome))
         .route("/subscribe", post(post_subscribe))

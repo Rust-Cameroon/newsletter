@@ -14,7 +14,9 @@ RUN apt update && apt install -y libpq5
 WORKDIR /app
 
 COPY --from=builder /app/target/release/newsletter ./newsletter
+
 COPY .env .env
+
 EXPOSE 8000
 
 

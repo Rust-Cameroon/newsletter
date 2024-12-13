@@ -30,4 +30,4 @@ spec:
                   name: {{ .Release.Name }}-postgres-username # Corrected secret name
                   key: username
             - name: DATABASE_URL
-              value: "postgres://postgres:mysecretpassword@10.104.124.26:5432/newsletter"
+              value: "postgres://postgres:mysecretpassword@{{ .Release.Name }}-postgresql-service:5432/newsletter"
