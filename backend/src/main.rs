@@ -1,6 +1,4 @@
-use std::sync::{Arc, Mutex};
 use axum::{
-    http::Method,
     response::IntoResponse,
     routing::{get, post},
     Extension, Router,
@@ -10,6 +8,7 @@ use newsletter::{
     database::connection::establish_connection,
     web::subscribe::{post_subscribe, post_verify_email, EmailOtp},
 };
+use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::{
@@ -37,8 +36,8 @@ async fn main() {
 
     let email = Arc::new(Mutex::new(String::new()));
     let code = EmailOtp { code: otp };
-    let port = 80809;
-    let socket = format!("0.0.0.0:{}",port);
+    let port = 8000;
+    let socket = format!("0.0.0.0:{}", port);
     let listener = TcpListener::bind(socket).await.unwrap();
     let router = Router::new()
         .route("/", get(welcome))

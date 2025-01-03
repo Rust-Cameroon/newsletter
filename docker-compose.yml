@@ -1,32 +1,32 @@
-version: '3.8'  # Version of Docker Compose
+version: '3.8' 
 services:
   postgres:
     image: postgres:latest
-    container_name: newsletter
+    container_name: newsletter2
     ports:
-      - "5434:5432"  # Host Port:Container Port
+      - "5432:5432"  
     environment:
       POSTGRES_PASSWORD: mysecretpassword
 
   backend:
     build:
-      context: ./backend # Path to the backend Dockerfile
-    image: newsletter_k8s_backend
+      context: ./backend 
+    image: newsletter_backend
     container_name: backend
     ports:
-      - "8000:8000"  # Adjust if your backend uses a different port
+      - "8000:8000"  
     environment:
-      DATABASE_URL: postgres://postgres:mysecretpassword@localhost:5433/newsletter
+      DATABASE_URL: postgres://postgres:mysecretpassword@localhost:5432/newsletter
     depends_on:
       - postgres
 
   frontend:
     build:
       context: ./frontend # Path to the frontend Dockerfile
-    image: newsletter_k8s_frontend
+    image: newsletter_frontend
     container_name: frontend
     ports:
-      - "8080:80"  # Adjust if your frontend uses a different port
+      - "5173:5173"  # Adjust if your frontend uses a different port
     depends_on:
       - backend
 

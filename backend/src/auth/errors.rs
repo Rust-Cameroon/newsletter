@@ -15,13 +15,15 @@ pub enum SubscriptionError {
     #[error("Error storing subscruber")]
     DatabaseError,
     #[error("could not send otp")]
-    MailError
+    MailError,
+    #[error("Invalid OTP")]
+    OtpError
 }
 impl SubscriptionError {
     /// Converts the error to an axum JSON representation.
     pub fn json(&self) -> Json<Value> {
-        Json(json!({
-            "error": self.to_string()
-        }))
+        Json({
+            json!(self.to_string())
+        })
     }
 }

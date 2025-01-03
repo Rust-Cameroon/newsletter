@@ -54,16 +54,20 @@ pub async fn auth_verify_otp(
     otp: String,
     conn: &mut Database,
     email_addr: String,
-) -> Result<bool, SubscriptionError> {
+) -> Result<(), SubscriptionError> {
     let totp = Otp::new();
     let result = totp
         .check_current(&otp)
         .map_err(|_| SubscriptionError::InternalError)?;
-    match subscribe(conn, email_addr)
-        .await
-        .map_err(|_| SubscriptionError::DatabaseError)
-    {
-        Ok(_) => Ok(result),
-        Err(e) => Err(e),
+    if result {
+        match subscribe(conn, email_addr)
+            .await
+            .map_err(|_| SubscriptionError::DatabaseError)
+        {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e),
+        }
+    } else {
+        Err(SubscriptionError::OtpError)
     }
 }

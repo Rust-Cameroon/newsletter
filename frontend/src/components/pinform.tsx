@@ -2,10 +2,11 @@
 import { useFormik } from 'formik';
 
 import OtpInput from 'formik-otp-input';
+import { useState } from 'react';
+import { Alert } from './response';
+import { useNavigate } from 'react-router-dom';
 
 
-
-// CSS Styles, adjust according to your needs
 const formStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -32,16 +33,18 @@ const submitButtonStyle = {
     marginTop: '20px',
 };
 
-// Form component
+
 const OtpForm = () => {
+    const navigate = useNavigate();
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const formik = useFormik({
         initialValues: {
             otp: '',
-            // ... other form fields if you wish
+
         },
         onSubmit: (values) => {
-          
-            fetch('http://localhost:8000/verify_otp', {
+
+            fetch('http://0.0.0.0:8000/verify_otp', {
                 method: 'POST',
                 headers: {
 
@@ -54,37 +57,53 @@ const OtpForm = () => {
 
                 })
             })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        const message = await response.text();
+                        setAlertMessage(message);
+                        throw new Error(message);
+                    }
+                    return response;
+                })
+                .then(() => navigate('/'))
+                .catch((error) => {
+                    setAlertMessage(error.message);
+                });
         },
     });
 
     return (
-        <form style={formStyle} onSubmit={formik.handleSubmit}>
-            <OtpInput
-                length={6}
-                value={formik.values.otp}
-                inputType={"numeric"}    // Default is numeric. Options are numeric, alphabetic or alphanumeric
-                autoFocus={true}    // Default is true. Will auto-focus first digit if true
-                autoSubmit={true}    // Default is true. Will auto-submit form onFullFill
-                onBlur={formik.handleBlur}   // Formik handler, used to handle onBlur events
-                onChange={formik.handleChange}   // Formik handler, used to handle change events
-                onFullFill={formik.handleSubmit}     // Formik handler, used to handle autoSubmit
-                setFieldError={formik.setFieldError}     // Formik handler, used to handle error rendering
-                setFieldTouched={formik.setFieldTouched}
-                // ... other props you can pass
-                highlightColor={'#4caf50'}
-                // textColor={'#FFFFFF'}
-                 backgroundColor='gray'
-                // borderColor={'#FFFFFF'}
-                // ... override any pre-existing styles if required
-                // style={{
-                //     'backgroundColor': '#ffc300'
-                // }}
-            />
-            {formik.errors.otp && formik.touched.otp && (
-                <div style={errorTextStyle}>{formik.errors.otp}</div>
+        <>
+            {alertMessage && (
+                <Alert
+                    message={alertMessage}
+                    onClose={() => setAlertMessage(null)}
+                />
             )}
-            <button type="submit" style={submitButtonStyle} >Submit</button>
-        </form>
+            <form style={formStyle} onSubmit={formik.handleSubmit}>
+                <OtpInput
+                    length={6}
+                    value={formik.values.otp}
+                    inputType={"numeric"}
+                    autoFocus={true}
+                    autoSubmit={true}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    onFullFill={formik.handleSubmit}
+                    setFieldError={formik.setFieldError}
+                    setFieldTouched={formik.setFieldTouched}
+
+                    highlightColor={'#4caf50'}
+
+                    backgroundColor='gray'
+
+                />
+                {formik.errors.otp && formik.touched.otp && (
+                    <div style={errorTextStyle}>{formik.errors.otp}</div>
+                )}
+                <button type="submit" style={submitButtonStyle} >Submit</button>
+            </form>
+        </>
     );
 };
 

@@ -17,7 +17,7 @@ impl Otp {
             Algorithm::SHA1,
             6,
             1,
-            20,
+            30,
             Secret::Encoded("KRSXG5CTMVRXEZLUKN2XAZLSKNSWG4TFOQ".to_string())
                 .to_bytes()
                 .unwrap(),
@@ -30,7 +30,7 @@ impl Otp {
             Algorithm::SHA1,
             6,
             1,
-            20,
+            30,
             Secret::Encoded("KRSXG5CTMVRXEZLUKN2XAZLSKNSWG4TFOQ".to_string())
                 .to_bytes()
                 .unwrap(),

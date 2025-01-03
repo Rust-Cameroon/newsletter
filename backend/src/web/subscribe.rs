@@ -51,6 +51,6 @@ pub async fn post_verify_email(
     let email = email.0.lock().unwrap().clone();
     match auth_verify_otp(otp.code.clone(), &mut database, email).await {
         Ok(_) => StatusCode::ACCEPTED.into_response(),
-        Err(e) => e.json().into_response(),
+        Err(e) => error_page(&e).into_response(),
     }
 }
