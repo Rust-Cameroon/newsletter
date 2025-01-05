@@ -1,7 +1,6 @@
-use axum::{
-    http::{Response, StatusCode},
-    response::IntoResponse,
-};
+use axum::
+    http::StatusCode
+;
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
 
 use crate::database::queries::{get_subscriber, subscribe, Database, Otp};
@@ -29,18 +28,18 @@ pub fn new_otp() -> String {
 }
 pub fn send_otp(otp: String, email: &String) -> Result<StatusCode, SubscriptionError> {
     let email = Message::builder()
-        .from("yemelechristian2@gmail.com".parse().unwrap())
-        .reply_to("to@example.com".parse().unwrap())
+        .from("hello@darma.segning.pro".parse().unwrap())
+        .reply_to("hello@darma.segning.pro".parse().unwrap())
         .to(email.parse().map_err(|_| SubscriptionError::InvalidEmail)?)
-        .subject("Rust Email")
+        .subject("Verification Email")
         .body(otp)
         .unwrap();
 
     // Set up the SMTP client
-    let creds = Credentials::new("d006ed6ea804b3".to_string(), "25553583d3558b".to_string());
+    let creds = Credentials::new("smtp@mailtrap.io".to_string(), "a5814b78ae16cd6514fcdcf506b7b86e".to_string());
     // Open a remote connection to gmail
 
-    let mailer = SmtpTransport::starttls_relay("sandbox.smtp.mailtrap.io")
+    let mailer = SmtpTransport::starttls_relay("bulk.smtp.mailtrap.io")
         .unwrap()
         .credentials(creds)
         .build();

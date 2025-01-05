@@ -1,36 +1,44 @@
-version: '3.8' 
+version: '3.8'
 services:
   postgres:
     image: postgres:latest
     container_name: newsletter2
     ports:
-      - "5432:5432"  
+      - "5432:5432"
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: newsletterdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
 
   backend:
     build:
-      context: ./backend 
+      context: ./backend
     image: newsletter_backend
     container_name: backend
     ports:
-      - "8000:8000"  
+      - "8000:8000"
     environment:
-      DATABASE_URL: postgres://postgres:mysecretpassword@localhost:5432/newsletter
+      DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/newsletterdb
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    command: ["sh", "-c", "diesel migration run && /app/newsletter"]
 
   frontend:
     build:
-      context: ./frontend # Path to the frontend Dockerfile
+      context: ./frontend
     image: newsletter_frontend
     container_name: frontend
     ports:
-      - "5173:5173"  # Adjust if your frontend uses a different port
+      - "5173:5173"
     depends_on:
       - backend
 
-
+  # Uncomment this if you need MinIO
   # minio:
   #   image: minio/minio
   #   container_name: minio
