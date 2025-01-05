@@ -25,12 +25,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
-    {/* <body className='scroll-smooth'>
-      <Navbar />
-      <main className='flex-grow main '>
-        <Body />
-      </main>
-    </body>
-    <Footer /> */}
+
   </StrictMode>,
 )

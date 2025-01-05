@@ -35,6 +35,7 @@ const submitButtonStyle = {
 
 
 const OtpForm = () => {
+    const URL = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const formik = useFormik({
@@ -44,7 +45,7 @@ const OtpForm = () => {
         },
         onSubmit: (values) => {
 
-            fetch('http://0.0.0.0:8000/verify_otp', {
+            fetch(`${URL}/verify_otp`, {
                 method: 'POST',
                 headers: {
 

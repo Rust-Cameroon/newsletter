@@ -1,18 +1,22 @@
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useState} from 'react';
+import { useState } from 'react';
 import { Alert } from './response';
 
 export const SignupForm = () => {
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
+  const URL = import.meta.env.VITE_BACKEND_URL;
+
+
   const formik = useFormik({
     initialValues: {
       email: '',
     },
+
     onSubmit: (values) => {
-      fetch('http://0.0.0.0:8000/subscribe', {
+      fetch(`${URL}/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,14 +27,14 @@ export const SignupForm = () => {
         .then(async (response) => {
           if (!response.ok) {
             const message = await response.text();
-            setAlertMessage(message); 
+            setAlertMessage(message);
             throw new Error(message);
           }
           return response;
         })
-        .then(() => navigate('/email_verification')) 
+        .then(() => navigate('/email_verification'))
         .catch((error) => {
-          setAlertMessage(error.message); 
+          setAlertMessage(error.message);
         });
     },
   });
