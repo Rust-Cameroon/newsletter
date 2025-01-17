@@ -23,10 +23,10 @@ function Body() {
                         </figure>
                         <a href="https://medium.com/@yemelechristian2/didcomm-messaging-vs-email-messaging-b98a3e116c82">
                             <div className="card-body" >
-                                <h2 className="card-title">Shoes!</h2>
-                                <p>If a dog chews shoes whose shoes does he choose?</p>
+                                <h2 className="card-title">Know more</h2>
+                                <p>Keep reading—valuable insights await just ahead.</p>
                                 <div className="card-actions justify-end">
-                                    <button className="btn btn-primary">Buy Now</button>
+                                    <button className="btn btn-primary">Continue...</button>
                                 </div>
                             </div>
                         </a>
