@@ -1,5 +1,5 @@
-use std::{
-    sync::{Arc, Mutex}, vec}
+use std::
+    sync::{Arc, Mutex}
 ;
 
 use axum::{

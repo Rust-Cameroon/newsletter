@@ -1,4 +1,3 @@
-
 use diesel::{prelude::*, result::Error};
 use diesel_async::{pooled_connection::deadpool::Pool, AsyncPgConnection, RunQueryDsl};
 use totp_rs::{Algorithm, Secret, TOTP};
@@ -6,8 +5,9 @@ use totp_rs::{Algorithm, Secret, TOTP};
 use crate::database::model::Subcriber;
 
 use super::{
-    model::NewSubscriber, schema::{self, subscribers}}
-;
+    model::NewSubscriber,
+    schema::{self, subscribers},
+};
 pub struct Otp;
 
 pub type Database = Pool<AsyncPgConnection>;
@@ -42,9 +42,10 @@ impl Otp {
 pub async fn subscribe(conn: &Database, email_addr: String) -> Result<usize, Error> {
     let mut conn = conn.get().await.unwrap();
     let new_sub = NewSubscriber { email: email_addr };
-  diesel::insert_into(subscribers::table)
+    diesel::insert_into(subscribers::table)
         .values(new_sub)
-        .execute(&mut *conn).await
+        .execute(&mut *conn)
+        .await
 }
 pub async fn unsubscribe(
     conn: &mut Database,
@@ -52,7 +53,9 @@ pub async fn unsubscribe(
 ) -> Result<usize, diesel::result::Error> {
     let mut conn = conn.get().await.unwrap();
     use schema::subscribers::dsl::*;
-    diesel::delete(subscribers.filter(email.like(mail_addr))).execute(&mut *conn).await
+    diesel::delete(subscribers.filter(email.like(mail_addr)))
+        .execute(&mut *conn)
+        .await
 }
 pub async fn get_subscriber(
     conn: &mut Database,
@@ -63,7 +66,8 @@ pub async fn get_subscriber(
     let result = subscribers
         .filter(email.eq(email_addr))
         .select(Subcriber::as_select())
-        .first(&mut *conn).await?;
+        .first(&mut *conn)
+        .await?;
 
     Ok(Some(result))
 }

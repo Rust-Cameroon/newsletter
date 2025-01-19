@@ -2,7 +2,7 @@ use axum::
     http::StatusCode
 ;
 use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
-use tracing::info;
+
 
 use crate::database::queries::{get_subscriber, subscribe, Database, Otp};
 
@@ -55,7 +55,7 @@ pub async fn auth_verify_otp(
     conn: &mut Database,
     email_addr: String,
 ) -> Result<(), SubscriptionError> {
-    info!(otp);
+
     let totp = Otp::new();
     let result = totp
         .check_current(&otp)
