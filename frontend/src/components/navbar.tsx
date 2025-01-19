@@ -1,3 +1,4 @@
+import Carousel from "./carousel";
 import { SignupForm } from "./subscription";
 
 export function Navbar() {
@@ -54,7 +55,7 @@ export function Navbar() {
 
             </nav>
 
-
+{/* <Carousel/> */}
 
         </>
     )
