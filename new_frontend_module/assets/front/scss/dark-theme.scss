@@ -1,0 +1,418 @@
+/* Dark Theme */
+.dark-theme {
+  color: rgba($white, $alpha: 0.9);
+  background: $dark-d-dark;
+  .half-authpage {
+    .authOne {
+      .auth-contents {
+        .logo {
+          .no-user-header {
+            .language-switcher {
+              .langu-swit {
+                border: 1px solid #ffffff1f;
+                color: #dbdbe9;
+                background: $user-d-dark;
+                &.nice-select {
+                  .list {
+                    background-color: #202d36;
+                    .option {
+                      background-color: #148b8621;
+                      &.selected {
+                        background-color: #148b8621;
+                      }
+                      &.focus {
+                        background-color: #148b8621;
+                      }
+                    }
+                  }
+                  &::after {
+                    border-bottom: 2px solid #dbdbe9;
+                    border-right: 2px solid #dbdbe9;
+                  }
+                }
+              }
+            }
+            .color-switcher {
+              .light-icon {
+                display: block;
+              }
+              .dark-icon {
+                display: none;
+              }
+            }
+          }
+        }
+        .contents {
+          .content {
+            form {
+              .inputs {
+                label {
+                  color: rgba($white, $alpha: 0.7);
+                }
+                .box-input {
+                  border: 2px solid rgba($white, $alpha: 0.2);
+                  color: $white;
+                  &:focus {
+                    border: 2px solid rgba($white, $alpha: 0.6);
+                  }
+                }
+                .passo-hide-show {
+                  filter: invert(1);
+                }
+                .remem-for {
+                  p {
+                    a {
+                      &:hover {
+                        color: rgba($white, $alpha: 0.7);
+                      }
+                    }
+                  }
+                }
+                .input-group {
+                  .input-group-text {
+                    border: 2px solid rgba($white, $alpha: 0.2);
+                    color: rgba($white, $alpha: 0.7);
+                  }
+                  .form-control {
+                    border: 2px solid rgba($white, $alpha: 0.2);
+                    color: $white;
+                  }
+                }
+              }
+            }
+            p {
+              color: rgba($white, $alpha: 0.7);
+              a {
+                &:hover {
+                  color: rgba($white, $alpha: 0.7);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .main-user-dahboard {
+    .user-sidebar {
+      background: $user-d-dark;
+      border-right: 1px solid #ffffff0d;
+      .site-logo {
+        border-bottom: 1px solid #ffffff0d;
+        background: $user-d-dark;
+      }
+      .user-nav {
+        ul {
+          li {
+            a {
+              span {
+                color: rgba($white, $alpha: 0.6);
+              }
+            }
+          }
+        }
+      }
+    }
+    .page-content {
+      .main-content {
+        .user-part-header {
+          background: $user-d-dark;
+          border-bottom: 1px solid #ffffff0d;
+          .nav-wrap {
+            .nav-left {
+              .single-left {
+                .site-sidebar-toggle {
+                  color: $polis;
+                }
+              }
+            }
+            .nav-right {
+              .single-right {
+                .help-support {
+                  a {
+                    color: rgba($white, $alpha: 0.8);
+                  }
+                }
+                .color-switcher {
+                  .light-icon {
+                    display: block;
+                  }
+                  .dark-icon {
+                    display: none;
+                  }
+                }
+                .language-switcher {
+                  .langu-swit {
+                    border: 1px solid #ffffff1f;
+                    color: #dbdbe9;
+                    background: $user-d-dark;
+                    &.nice-select {
+                      .list {
+                        background-color: #202d36;
+                        .option {
+                          background-color: #148b8621;
+                          &.selected {
+                            background-color: #148b8621;
+                          }
+                          &.focus {
+                            background-color: #148b8621;
+                          }
+                        }
+                      }
+                      &::after {
+                        border-bottom: 2px solid #dbdbe9;
+                        border-right: 2px solid #dbdbe9;
+                      }
+                    }
+                  }
+                }
+                .user-head-drop {
+                  .dropdown {
+                    .dropdown-menu {
+                      background: #202d36;
+                      .user-head-drop-top {
+                        .names {
+                          color: rgba($white, $alpha: 0.8);
+                        }
+                      }
+                      li {
+                        .dropdown-item {
+                          span {
+                            color: rgba($white, $alpha: 0.8);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                .notification-dot {
+                  color: $white;
+                }
+              }
+            }
+          }
+        }
+        .page-gap {
+          .identity-alert {
+            border: 2px dashed rgba($red, $alpha: 0.4);
+            .contents {
+              .content {
+                color: rgba($white, $alpha: 0.6);
+              }
+            }
+          }
+          .user-referral-card {
+            background: $user-d-dark;
+          }
+          .single-spec-stat {
+            box-shadow: 0px 0px 2px rgba($white, $alpha: 0.4);
+            background: $user-d-dark;
+            .top {
+              .icon {
+                box-shadow: 6px 9px 10px 0px #81ef7121;
+              }
+            }
+            .text {
+              color: rgba($white, $alpha: 0.7);
+            }
+            .bottom {
+              .ex-link {
+                background: $polis;
+                color: $black;
+              }
+            }
+          }
+          .single-user-stat-card {
+            box-shadow: 0px 0px 2px rgba($white, $alpha: 0.4);
+            background: $user-d-dark;
+            &::after {
+              color: #71c8560d;
+            }
+          }
+          .site-custom-table {
+            .contents {
+              .site-table-list {
+                .site-table-col {
+                  border-bottom: 1px solid rgba($white, $alpha: 0.1);
+                  .description {
+                    .event-icon {
+                      background: $polis;
+                      color: $black;
+                    }
+                    .content {
+                      .title {
+                        .msg {
+                          background: rgba($polis, $alpha: 0.2);
+                          color: $polis;
+                        }
+                      }
+                      .date {
+                        color: rgba($white, $alpha: 0.5);
+                      }
+                    }
+                  }
+                }
+              }
+              .site-table-head {
+                background: $user-d-dark;
+                .site-table-col {
+                  border-bottom: 1px solid rgba($white, $alpha: 0.1);
+                  color: rgba($white, $alpha: 0.5);
+                }
+              }
+            }
+          }
+          .step-details-form {
+            .inputs {
+              label {
+                color: rgba($white, $alpha: 0.7);
+              }
+              .box-input {
+                border: 2px solid rgba($white, $alpha: 0.2);
+                color: $white;
+                &:focus {
+                  border: 2px solid rgba($white, $alpha: 0.6);
+                }
+              }
+              .box-textarea {
+                border: 2px solid rgba($white, $alpha: 0.2);
+                color: $white;
+                &:focus {
+                  border: 2px solid rgba($white, $alpha: 0.6);
+                }
+              }
+              .passo-hide-show {
+                filter: invert(1);
+              }
+              .remem-for {
+                p {
+                  a {
+                    &:hover {
+                      color: rgba($white, $alpha: 0.7);
+                    }
+                  }
+                }
+              }
+              .input-group {
+                .input-group-text {
+                  border: 2px solid rgba($white, $alpha: 0.2);
+                  color: rgba($white, $alpha: 0.7);
+                }
+                .form-control {
+                  border: 2px solid rgba($white, $alpha: 0.2);
+                  color: $white;
+                }
+              }
+              .nice-select {
+                .list {
+                  border: 2px solid rgba($white, $alpha: 0.3);
+                  background: $black;
+                  li {
+                    background: rgba($user-d-dark, $alpha: 1);
+                    color: $white;
+                  }
+                }
+                &::after {
+                  border-bottom: 2px solid #dbdbe9;
+                  border-right: 2px solid #dbdbe9;
+                }
+              }
+            }
+          }
+          .transaction-success-block {
+            background: $user-d-dark;
+          }
+          .single-badge {
+            background: $dark-d-dark;
+          }
+        }
+      }
+    }
+  }
+  .checkbox-wrapper-15 .cbx span a:hover {
+    color: $deep-primary;
+  }
+  .site-card {
+    box-shadow: 0px 0px 2px rgba($white, $alpha: 0.4);
+    background: $user-d-dark;
+    .site-card-header {
+      border-bottom: 1px solid rgba($white, $alpha: 0.1);
+      .card-header-links {
+        .card-header-link {
+          background: $polis;
+          color: $black;
+        }
+      }
+    }
+  }
+  .site-badge {
+    &.badge-success {
+      background: $green;
+      color: $white;
+    }
+    &.badge-failed {
+      background: $red;
+      color: $white;
+    }
+    &.badge-pending {
+      background: $yellow;
+      color: $black;
+    }
+    &.badge-primary {
+      background: rgba($polis, $alpha: 0.2);
+      color: $polis;
+    }
+  }
+  .select2-container--default {
+    .select2-selection--single {
+      border: 2px solid rgba($white, $alpha: 0.3);
+      .select2-selection__rendered {
+        color: rgba($white, $alpha: 0.7);
+      }
+      &:focus {
+        border: 2px solid rgba($white, $alpha: 0.5);
+      }
+    }
+    .select2-search--dropdown {
+      .select2-search__field {
+        border: 2px solid rgba($white, $alpha: 0.4);
+        background: $black;
+        color: $white;
+      }
+    }
+  }
+  .select2-dropdown {
+    background: $black;
+    border: 2px solid rgba($white, $alpha: 0.4);
+  }
+  .transfer-top-btns {
+    a {
+      background: rgba($polis, $alpha: 0.2);
+      color: $polis;
+      &:hover {
+        background: $polis;
+        color: $black;
+      }
+      &.active {
+        background: $polis;
+        color: $black;
+      }
+    }
+  }
+  .site-table-modal {
+    background: $user-d-dark;
+    .modal-body {
+      .modal-btn-close {
+        color: $white;
+      }
+      .modal-beneficiary-details {
+        .profile-text-data {
+          border-bottom: 1px dashed rgba($white, $alpha: 0.1);
+          .attribute {
+            color: rgba($white, $alpha: 0.5);
+          }
+        }
+      }
+    }
+  }
+}

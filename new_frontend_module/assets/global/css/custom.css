@@ -1,0 +1,160 @@
+/* deposit-modal */
+.deposit-modal .modal-header h5 {
+    color: #333;
+}
+
+.deposit-modal .modal-header .btn-close {
+    font-size: 14px;
+    right: 10px;
+    top: 10px;
+}
+
+.deposit-modal .modal-body .hex-address {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-bottom: 7px;
+}
+
+.deposit-modal .modal-body .hex-address input {
+    height: 50px;
+    flex: 1 1 85%;
+    border: 2px solid;
+    border-color: #00000040;
+    background: transparent;
+    color: #001219;
+    transition: 0.3s;
+    padding: 0 15px;
+    margin-right: 0px;
+    border-radius: 4px 0 0 4px;
+    border-right: 0;
+    font-size: 18px;
+}
+
+.deposit-modal .modal-body .hex-address button {
+    height: 50px;
+    flex: 1 1 15%;
+    background: linear-gradient(90deg, #e52e71, #ff8a00);
+    color: #ffffff;
+    border: 2px solid;
+    border-color: #e73667;
+    font-size: 16px;
+    border-radius: 0 4px 4px 0;
+}
+
+.deposit-modal .modal-body p {
+    text-align: center;
+    color: #a7a7a7;
+}
+
+.deposit-modal .modal-body a {
+    color: #5364f1;
+}
+
+.deposit-modal .modal-footer p {
+    color: #a7a7a7;
+}
+
+.deposit-modal .modal-footer p a {
+    color: #5364f1;
+}
+
+.qr-code {
+    width: 400px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+img.img-icon {
+    width: 26px !important;
+}
+
+.wrap-custom-file .close {
+    background: #EF476F;
+    height: 30px;
+    width: 30px;
+    line-height: 27px;
+    border-radius: 50%;
+    color: #ffffff;
+    position: absolute;
+    right: 7px;
+    top: 7px;
+    z-index: 999;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.close {
+    float: right;
+    font-size: 21px;
+    line-height: 1;
+    color: #000;
+    opacity: .2;
+}
+
+
+/* notiy css */
+.admin-toaster {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: #ffffff;
+    box-shadow: 0px 0px 2px rgba(94, 63, 201, 0.4);
+    padding: 30px 20px;
+    z-index: 999999;
+    border-radius: 6px;
+    display: flex;
+    width: 350px;
+}
+
+.admin-toaster .icon {
+    height: 40px;
+    min-width: 40px;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.admin-toaster .icon.success {
+    background: #2a9d8f;
+}
+
+.admin-toaster .icon.warning {
+    background: #ee6c4d;
+}
+
+.admin-toaster .icon.error {
+    background: #ef476f;
+}
+
+.admin-toaster .icon svg {
+    height: 20px;
+}
+
+.admin-toaster .contents h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.admin-toaster .contents p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.admin-toaster .close {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+}
+
+.admin-toaster .close svg {
+    height: 20px;
+}
+
+.admin-toaster .close:hover {
+    color: #ef476f;
+}

@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,cAAc",
+    "sources": [
+        "../scss/rtl.scss"
+    ],
+    "names": [],
+    "file": "rtl.css"
+}

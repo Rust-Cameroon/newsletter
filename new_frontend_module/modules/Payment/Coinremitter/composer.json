@@ -1,0 +1,24 @@
+{
+    "name": "coinremitter/laravel",
+    "description": "Official laravel plugin for coinremitter cryptocurrency payment gateway",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "laravel/framework": ">=7.0"
+    },
+    "autoload":{
+        "psr-4":{
+            "Coinremitter\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Coinremitter\\CoinremiterServiceProvider"
+            ]
+        }
+    }
+}
