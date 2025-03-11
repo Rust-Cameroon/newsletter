@@ -5,8 +5,11 @@ use axum::{
 };
 use newsletter::{
     auth::authentication::new_otp,
-    database::connection::establish_connection,
-    web::subscribe::{post_subscribe, post_verify_email, EmailOtp},
+    database::{connection::establish_connection, queries::get_posts},
+    web::{
+        posts::{add_post, get_posts_},
+        subscribe::{post_subscribe, post_verify_email, EmailOtp},
+    },
 };
 use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
@@ -42,6 +45,7 @@ async fn main() {
     let router = Router::new()
         .route("/", get(welcome))
         .route("/subscribe", post(post_subscribe))
+        .route("/posts", get(get_posts_).post(add_post))
         .route("/verify_otp", post(post_verify_email))
         .layer(
             ServiceBuilder::new()

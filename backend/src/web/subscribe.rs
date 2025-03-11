@@ -24,7 +24,7 @@ pub struct Subscription {
 pub struct EmailOtp {
     pub code: String,
 }
-#[axum::debug_handler]
+
 pub async fn post_subscribe(
     Extension(otp): Extension<EmailOtp>,
     Extension(email): Extension<Arc<Mutex<String>>>,
@@ -42,7 +42,7 @@ pub async fn post_subscribe(
         Err(e) => error_page(&e).into_response(),
     }
 }
-#[axum::debug_handler]
+
 pub async fn post_verify_email(
     mut database: Extension<Database>,
     email: Extension<Arc<Mutex<String>>>,

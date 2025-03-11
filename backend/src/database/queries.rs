@@ -5,8 +5,12 @@ use totp_rs::{Algorithm, Secret, TOTP};
 use crate::database::model::Subcriber;
 
 use super::{
-    model::NewSubscriber,
-    schema::{self, subscribers},
+    model::{NewPost, NewSubscriber, Post},
+    schema::{
+        self,
+        posts::{self, table},
+        subscribers,
+    },
 };
 pub struct Otp;
 
@@ -70,4 +74,30 @@ pub async fn get_subscriber(
         .await?;
 
     Ok(Some(result))
+}
+
+pub async fn get_posts(conn: &mut Database) -> Result<Vec<Post>, Error> {
+    let mut conn = conn
+        .get()
+        .await
+        .map_err(|e| Error::QueryBuilderError(e.to_string().into()))?;
+    let post_list = posts::table
+        .select(Post::as_select())
+        .load::<Post>(&mut *conn)
+        .await
+        .map_err(|e| Error::QueryBuilderError(e.to_string().into()))?;
+    Ok(post_list)
+}
+
+pub async fn add_post(conn: &mut Database, post: NewPost) -> Result<bool, Error> {
+    let mut conn = conn
+        .get()
+        .await
+        .map_err(|e| Error::QueryBuilderError(e.to_string().into()))?;
+
+    let post = diesel::insert_into(posts::table)
+        .values(post)
+        .execute(&mut *conn)
+        .await?;
+    Ok(post == 1)
 }

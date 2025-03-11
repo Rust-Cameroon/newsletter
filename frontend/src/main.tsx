@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import OtpForm from './components/pinform.tsx'
 import App from './App.tsx'
 import Articles from './components/articles.tsx'
+import AdminPanel from './components/admin.tsx'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,11 @@ const router = createBrowserRouter([
   }, {
     path: "/articles",
     element: <Articles />
+  },
+  {
+    path: "/admin",
+    element: <AdminPanel />
+
   }
 ]);
 
