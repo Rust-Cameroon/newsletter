@@ -1,14 +1,17 @@
-# Use the official Node.js image as the base image
-FROM node:latest
-# Set the working directory
+# Build stage
+FROM node:latest AS build
 WORKDIR /frontend
-# Copy the package.json and package-lock.json files
 COPY package*.json ./
-# Install dependencies
 RUN npm install
-# Copy the rest of the application code
 COPY . .
-# Expose the application's port
-EXPOSE 5173
-# Start the application
-CMD ["npm", "run", "dev"]
+RUN npm run build
+
+# Serve with Nginx
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=build /frontend/dist ./
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,14 +1,18 @@
-version: '3.8'
+version: "3.8"
+
 services:
   postgres:
     image: postgres:latest
-    container_name: newsletter2
+    container_name: newsletter_db
+    restart: always
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: newsletterdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -19,6 +23,7 @@ services:
       context: ./backend
     image: newsletter_backend
     container_name: backend
+    restart: always
     ports:
       - "8000:8000"
     environment:
@@ -26,28 +31,19 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["sh", "-c", "diesel migration run && /app/newsletter"]
+    command: ["/app/newsletter"]
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile.prod # Use a production Dockerfile
     image: newsletter_frontend
     container_name: frontend
+    restart: always
     ports:
-      - "5173:5173"
+      - "80:80"
     depends_on:
       - backend
 
-  # Uncomment this if you need MinIO
-  # minio:
-  #   image: minio/minio
-  #   container_name: minio
-  #   ports:
-  #     - "9000:9000"
-  #     - "9090:9090"
-  #   environment:
-  #     MINIO_ROOT_USER: minioadmin
-  #     MINIO_ROOT_PASSWORD: minioadmin
-  #   volumes:
-  #     - ~/minio/data:/data
-  #   command: server /data --console-address ":9090"
+volumes:
+  postgres_data:
