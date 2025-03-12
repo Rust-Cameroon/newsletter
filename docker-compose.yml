@@ -36,7 +36,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.prod # Use a production Dockerfile
+      dockerfile: Dockerfile
     image: newsletter_frontend
     container_name: frontend
     restart: always
