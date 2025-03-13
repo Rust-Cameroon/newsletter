@@ -5,7 +5,7 @@ use axum::{
 };
 use newsletter::{
     auth::authentication::new_otp,
-    database::{connection::establish_connection, queries::get_posts},
+    database::connection::establish_connection,
     web::{
         posts::{add_post, get_posts_},
         subscribe::{post_subscribe, post_verify_email, EmailOtp},
