@@ -8,19 +8,19 @@ export default function Footer() {
                         <div className="mb-6 md:mb-0">
                         
                             <a href="https://www.linuxfoundation.org/" className="flex items-center">
-                                <img src="../src/assets/Linux_Foundation_logo.png" className="h-10 mw-100 me-3" alt="Linux Foundation Logo" />
+                                <img src="/assets/Linux_Foundation_logo.png" className="h-10 mw-100 me-3" alt="Linux Foundation Logo" />
                             </a>
                         </div>
 
                         <div>
                             <a href="https://foundation.rust-lang.org/" className="flex items-center">
-                                <img src="../src/assets/rustfoundation.png" className="h-14 mw-100 me-3" alt="Rust Lang Logo" />
+                                <img src="/assets/rustfoundation.png" className="h-14 mw-100 me-3" alt="Rust Lang Logo" />
                             </a>
                         </div>
 
                         <div>
                             <a href="https://adorsys.com/" className="flex items-center">
-                                <img src="../src/assets/adorsys1.png" className="h-8 mw-100 me-3" alt="Adorsys Logo" />
+                                <img src="/assets/adorsys1.png" className="h-8 mw-100 me-3" alt="Adorsys Logo" />
                             </a>
                         </div>
                         <div className="grid grid-cols-3 gap-12 sm:gap-12 sm:grid-cols-3">
