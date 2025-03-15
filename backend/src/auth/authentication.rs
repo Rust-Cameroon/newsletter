@@ -1,8 +1,8 @@
-use axum::
-    http::StatusCode
-;
-use lettre::{transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
-
+use axum::http::StatusCode;
+use lettre::{
+    message::MessageBuilder, transport::smtp::authentication::Credentials, Message, SmtpTransport,
+    Transport,
+};
 
 use crate::database::queries::{get_subscriber, subscribe, Database, Otp};
 
@@ -28,25 +28,41 @@ pub fn new_otp() -> String {
     Otp::generate_new()
 }
 pub fn send_otp(otp: String, email: &String) -> Result<StatusCode, SubscriptionError> {
+    let from = std::env::var("EMAIL_FROM").unwrap_or("hello@darma.segning.pro".to_string());
+    let reply_to = std::env::var("EMAIL_REPLY_TO").unwrap_or("hello@darma.segning.pro".to_string());
+
     let email = Message::builder()
-        .from("hello@darma.segning.pro".parse().unwrap())
-        .reply_to("hello@darma.segning.pro".parse().unwrap())
+        .from(from.parse().map_err(|e| {
+            tracing::error!("Error parsing email: {:?}", e);
+            SubscriptionError::InternalError
+        })?)
+        .reply_to(reply_to.parse().map_err(|e| {
+            tracing::error!("Error parsing email: {:?}", e);
+            SubscriptionError::InternalError
+        })?)
         .to(email.parse().map_err(|_| SubscriptionError::InvalidEmail)?)
         .subject("Verification Email")
         .body(otp)
-        .unwrap();
+        .map_err(|e| SubscriptionError::Generic(e.to_string()));
 
     // Set up the SMTP client
-    let creds = Credentials::new("smtp@mailtrap.io".to_string(), "a5814b78ae16cd6514fcdcf506b7b86e".to_string());
+    let creds = Credentials::new(
+        "smtp@mailtrap.io".to_string(),
+        "a5814b78ae16cd6514fcdcf506b7b86e".to_string(),
+    );
     // Open a remote connection to gmail
 
     let mailer = SmtpTransport::starttls_relay("bulk.smtp.mailtrap.io")
         .unwrap()
         .credentials(creds)
         .build();
-    match mailer.send(&email) {
-        Ok(_) => Ok(StatusCode::OK),
-        Err(_) => Err(SubscriptionError::MailError),
+    if let Some(email) = email.ok() {
+        match mailer.send(&email) {
+            Ok(_) => Ok(StatusCode::OK),
+            Err(_) => Err(SubscriptionError::MailError),
+        }
+    } else {
+        Err(SubscriptionError::InternalError)
     }
 }
 
@@ -55,7 +71,6 @@ pub async fn auth_verify_otp(
     conn: &mut Database,
     email_addr: String,
 ) -> Result<(), SubscriptionError> {
-
     let totp = Otp::new();
     let result = totp
         .check_current(&otp)
