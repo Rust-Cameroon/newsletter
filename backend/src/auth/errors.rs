@@ -17,7 +17,9 @@ pub enum SubscriptionError {
     #[error("could not send otp")]
     MailError,
     #[error("Invalid OTP")]
-    OtpError
+    OtpError,
+    #[error("error: {0}")]
+    Generic(String)
 }
 impl SubscriptionError {
     /// Converts the error to an axum JSON representation.
