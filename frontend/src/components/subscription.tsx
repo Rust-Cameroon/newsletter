@@ -7,7 +7,7 @@ export const SignupForm = () => {
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
-  const URL = import.meta.env.VITE_BACKEND_URL && "localhost:8000";
+  const URL = import.meta.env.VITE_BACKEND_URL ;
 
 
   const formik = useFormik({

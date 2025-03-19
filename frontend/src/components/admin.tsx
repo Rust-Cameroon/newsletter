@@ -7,9 +7,9 @@ export default function Newsletter() {
     const [imageUrl, setImageUrl] = useState("");
     const [link, setLink] = useState("");
     const [message, setMessage] = useState("");
-
+    const URL = import.meta.env.VITE_BACKEND_URL 
     useEffect(() => {
-        fetch("http://localhost:8000/posts")
+        fetch("posts")
             .then((res) => res.json())
             .then((data) => setPosts(data))
             .catch((err) => console.error("Error fetching posts:", err));
@@ -26,7 +26,7 @@ export default function Newsletter() {
         };
 
         try {
-            const res = await fetch("http://localhost:8000/posts", {
+            const res = await fetch(`${URL}/posts`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newPost),
