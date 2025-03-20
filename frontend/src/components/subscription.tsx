@@ -24,7 +24,8 @@ export const SignupForm = () => {
         },
         body: JSON.stringify({ email: values.email }),
       })
-        .then(async (response) => {
+      .then(async (response) => {
+          console.log("email", values.email);
           if (!response.ok) {
             const message = await response.text();
             setAlertMessage(message);
