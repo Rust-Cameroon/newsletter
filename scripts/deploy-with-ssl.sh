@@ -16,7 +16,17 @@ DOMAIN="$1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Load environment variables if .env file exists
+if [ -f "$PROJECT_DIR/.env" ]; then
+    echo "📄 Loading environment variables from .env file..."
+    export $(grep -v '^#' "$PROJECT_DIR/.env" | xargs)
+fi
+
+# Set default backend URL if not provided
+export BACKEND_URL=${BACKEND_URL:-"http://backend:8000"}
+
 echo "🚀 Starting deployment for $DOMAIN..."
+echo "🔗 Backend URL: $BACKEND_URL"
 
 # Step 1: Setup SSL certificates
 echo "🔒 Setting up SSL certificates..."

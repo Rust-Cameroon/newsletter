@@ -1,14 +1,17 @@
 # Production stage with Nginx
 FROM nginx:alpine
 
+# Install envsubst for environment variable substitution
+RUN apk add --no-cache gettext
+
 # Copy built application (assuming it's built locally)
 COPY dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom Nginx configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # Expose ports 80 and 443
 EXPOSE 80 443
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start Nginx with environment variable substitution
+CMD ["sh", "-c", "envsubst '${BACKEND_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
