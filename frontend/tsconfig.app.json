@@ -18,7 +18,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* React types */
+    "types": ["vite/client", "react", "react-dom"]
   },
   "include": ["src", "public/assets"]
 }

@@ -5,6 +5,69 @@
 
 set -e
 
+# Function to setup SSL using standalone mode
+setup_ssl_standalone() {
+    local domain="$1"
+    local email="$2"
+    
+    echo "🔄 Setting up SSL using standalone mode..."
+    echo "⚠️  This will temporarily stop nginx to bind to port 80"
+    
+    # Stop nginx temporarily
+    systemctl stop nginx
+    
+    # Obtain certificate using standalone mode
+    certbot certonly --standalone -d $domain -d www.$domain --email $email --agree-tos --non-interactive
+    
+    # Start nginx again
+    systemctl start nginx
+    
+    # Update nginx config to use the certificate
+    echo "🔧 Updating nginx configuration to use SSL certificate..."
+    
+    # Add SSL configuration to nginx
+    cat >> $NGINX_CONFIG << EOF
+
+# SSL Configuration
+server {
+    listen 443 ssl http2;
+    server_name $domain www.$domain;
+    
+    ssl_certificate /etc/letsencrypt/live/$domain/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
+    
+    # SSL Security Settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    
+    # HSTS
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name $domain www.$domain;
+    return 301 https://\$server_name\$request_uri;
+}
+EOF
+    
+    # Test and reload nginx
+    nginx -t
+    systemctl reload nginx
+}
+
 if [ -z "$1" ]; then
     echo "❌ Error: Domain name is required"
     echo "Usage: $0 <domain-name>"
@@ -30,9 +93,22 @@ nginx -t
 echo "🔄 Reloading Nginx..."
 systemctl reload nginx
 
-# Obtain SSL certificate
-echo "📜 Obtaining SSL certificate from Let's Encrypt..."
-certbot --nginx -d $DOMAIN -d www.$DOMAIN --email $EMAIL --agree-tos --non-interactive --redirect
+# Check if certbot nginx plugin is available
+echo "🔍 Checking certbot nginx plugin..."
+if ! certbot plugins | grep -q nginx; then
+    echo "⚠️  certbot nginx plugin is not installed"
+    echo ""
+    echo "📦 To install the nginx plugin, run:"
+    echo "   sudo apt update"
+    echo "   sudo apt install -y python3-certbot-nginx"
+    echo ""
+    echo "🔄 Using standalone mode instead (will temporarily stop nginx)..."
+    setup_ssl_standalone "$DOMAIN" "$EMAIL"
+else
+    # Obtain SSL certificate using nginx plugin
+    echo "📜 Obtaining SSL certificate from Let's Encrypt..."
+    certbot --nginx -d $DOMAIN -d www.$DOMAIN --email $EMAIL --agree-tos --non-interactive --redirect
+fi
 
 # Test certificate renewal
 echo "🔄 Testing certificate renewal..."
