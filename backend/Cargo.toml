@@ -1,22 +1,16 @@
 [package]
-name = "newsletter"
+name = "rust-cameroon-api"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 axum = { version = "0.7.7", features = ["macros"] }
-diesel = { version = "2.2.4", features = ["postgres"] }
-diesel-async = { version = "0.5.0", features = ["postgres", "deadpool"] }
-dotenvy = "0.15.7"
-letter = "0.0.0"
-lettre = "0.11.9"
-lettre_email = "0.9.4"
+chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
-thiserror = "1.0.64"
-tokio = { version = "1.40.0", features = ["full", "rt"] }
-totp-rs = "5.6.0"
+tokio = { version = "1.40.0", features = ["full"] }
 tower = "0.5.1"
-tower-http = { version = "0.6.1", features = ["cors", "trace"] }
+tower-http = { version = "0.6.1", features = ["cors", "trace", "fs"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
+uuid = { version = "1.0", features = ["v4", "serde"] }
