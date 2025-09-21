@@ -112,13 +112,17 @@ fi
 
 # Test certificate renewal
 echo "🔄 Testing certificate renewal..."
+# Stop nginx temporarily for renewal test (since we used standalone mode)
+systemctl stop nginx
 certbot renew --dry-run
+systemctl start nginx
 
 # Setup automatic renewal
 echo "⏰ Setting up automatic certificate renewal..."
 cat > /etc/cron.d/certbot-renew << EOF
 # Renew Let's Encrypt certificates twice daily
-0 */12 * * * root certbot renew --quiet --post-hook "systemctl reload nginx"
+# For standalone mode, we need to stop nginx during renewal
+0 */12 * * * root systemctl stop nginx && certbot renew --quiet --standalone --post-hook "systemctl start nginx"
 EOF
 
 # Create renewal script
@@ -127,12 +131,16 @@ cat > /usr/local/bin/renew-ssl.sh << 'EOF'
 # SSL Certificate Renewal Script
 
 echo "🔄 Checking SSL certificate renewal..."
-certbot renew --quiet --post-hook "systemctl reload nginx"
+# Stop nginx for standalone renewal, then restart it
+systemctl stop nginx
+certbot renew --quiet --standalone --post-hook "systemctl start nginx"
 
 if [ $? -eq 0 ]; then
     echo "✅ SSL certificate renewal completed successfully"
 else
     echo "❌ SSL certificate renewal failed"
+    # Restart nginx even if renewal failed
+    systemctl start nginx
     # You can add notification logic here (email, Slack, etc.)
 fi
 EOF
