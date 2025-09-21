@@ -44,7 +44,7 @@ fi
 
 # Step 3: Build and deploy with Docker
 echo "🐳 Building and deploying with Docker..."
-docker-compose -f docker-compose.prod.yml down
+docker-compose -f docker-compose.prod.yml down frontend
 docker-compose -f docker-compose.prod.yml build --no-cache
 docker-compose -f docker-compose.prod.yml up -d
 

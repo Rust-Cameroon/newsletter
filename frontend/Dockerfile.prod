@@ -8,7 +8,7 @@ RUN apk add --no-cache gettext
 COPY dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration template
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY nginx-http-only.conf /etc/nginx/templates/default.conf.template
 
 # Expose ports 80 and 443
 EXPOSE 80 443
