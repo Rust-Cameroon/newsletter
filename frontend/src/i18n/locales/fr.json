@@ -1,0 +1,186 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "retry": "Réessayer",
+    "readMore": "Lire la suite",
+    "learnMore": "En savoir plus",
+    "joinEvents": "Rejoindre les événements",
+    "aboutUs": "À propos",
+    "events": "Événements",
+    "blog": "Blog",
+    "home": "Accueil",
+    "about": "À propos",
+    "admin": "Admin",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "viewAll": "Voir tout",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "submit": "Soumettre",
+    "reset": "Réinitialiser",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "language": "Langue",
+    "english": "English",
+    "french": "Français"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "about": "À propos",
+    "events": "Événements",
+    "blog": "Blog",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Bienvenue à Rust Cameroun",
+    "subtitle": "Construire une communauté Rust vibrante, inclusive et passionnée ici au Cameroun. Que vous soyez un Rustacéen expérimenté ou que vous commenciez votre parcours, vous êtes au bon endroit.",
+    "learnMore": "En savoir plus",
+    "joinEvents": "Rejoindre les événements",
+    "mission": {
+      "title": "Notre Mission",
+      "description": "Nous nous consacrons à favoriser une forte communauté Rust au Cameroun en organisant des rencontres, des ateliers et des événements éducatifs. Notre objectif est de rendre Rust accessible à tous, des débutants aux experts."
+    },
+    "community": {
+      "title": "Rejoignez notre communauté",
+      "description": "Connectez-vous avec d'autres passionnés de Rust, partagez vos connaissances et collaborez sur des projets passionnants. Ensemble, nous construisons l'avenir de la programmation système au Cameroun."
+    },
+    "recentPosts": {
+      "title": "Articles récents",
+      "viewAll": "Voir tous les articles"
+    }
+  },
+  "about": {
+    "title": "À propos de Rust Cameroun",
+    "subtitle": "Nous construisons une communauté Rust vibrante, inclusive et passionnée ici au Cameroun.",
+    "mission": {
+      "title": "Notre Mission",
+      "content": "Notre mission est de promouvoir l'utilisation de Rust, de favoriser la collaboration et d'autonomiser les développeurs par l'apprentissage et le partage. Nous croyons que la sécurité mémoire de Rust, ses performances et son expérience développeur en font un excellent choix pour construire des systèmes logiciels fiables.",
+      "additional": "Grâce aux rencontres, ateliers et événements, nous visons à connecter les passionnés de Rust, partager les connaissances et construire des projets incroyables ensemble. Que vous soyez intéressé par la programmation système, le développement web, les systèmes embarqués ou la blockchain, Rust a quelque chose à offrir."
+    },
+    "whatWeDo": {
+      "title": "Ce que nous faisons",
+      "items": [
+        "Rencontres et ateliers mensuels",
+        "Conférences techniques et présentations",
+        "Sessions de codage collaboratif",
+        "Contributions aux projets open source"
+      ]
+    },
+    "vision": {
+      "title": "Notre Vision",
+      "content": "Devenir la communauté Rust leader en Afrique centrale, reconnue pour notre excellence technique, notre culture inclusive et nos projets innovants qui résolvent des problèmes du monde réel en utilisant Rust."
+    },
+    "values": {
+      "title": "Nos Valeurs",
+      "inclusivity": {
+        "title": "Inclusivité",
+        "content": "Nous accueillons les développeurs de tous niveaux, origines et expériences. Chacun a quelque chose de précieux à apporter à notre communauté."
+      },
+      "learning": {
+        "title": "Apprentissage continu",
+        "content": "Nous croyons au pouvoir de l'apprentissage continu et du partage de connaissances. Notre communauté prospère grâce au soutien mutuel et à l'apprentissage collaboratif."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "content": "Nous encourageons la pensée innovante et la résolution créative de problèmes en utilisant les caractéristiques et capacités uniques de Rust."
+      }
+    },
+    "join": {
+      "title": "Rejoignez-nous",
+      "content": "Prêt à faire partie de quelque chose d'extraordinaire ? Rejoignez notre communauté dès aujourd'hui et commencez votre parcours Rust avec nous. Que vous soyez un débutant complet ou un développeur expérimenté, il y a une place pour vous dans Rust Cameroun."
+    }
+  },
+  "events": {
+    "title": "Événements",
+    "subtitle": "Rejoignez nos prochains événements et connectez-vous avec la communauté Rust au Cameroun",
+    "upcoming": "Événements à venir",
+    "past": "Événements passés",
+    "noEvents": "Aucun événement programmé pour le moment. Revenez bientôt !",
+    "register": "S'inscrire",
+    "details": "Détails de l'événement",
+    "date": "Date",
+    "time": "Heure",
+    "location": "Lieu",
+    "description": "Description",
+    "speakers": "Intervenants",
+    "agenda": "Programme"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Derniers aperçus, tutoriels et actualités de la communauté Rust",
+    "recentPosts": "Articles récents",
+    "allPosts": "Tous les articles",
+    "noPosts": "Aucun article disponible pour le moment.",
+    "readMore": "Lire la suite",
+    "publishedOn": "Publié le",
+    "by": "par",
+    "tags": "Étiquettes",
+    "relatedPosts": "Articles connexes"
+  },
+  "post": {
+    "backToBlog": "Retour au blog",
+    "share": "Partager",
+    "publishedOn": "Publié le",
+    "by": "par",
+    "tags": "Étiquettes",
+    "relatedPosts": "Articles connexes",
+    "noRelatedPosts": "Aucun article connexe trouvé."
+  },
+  "admin": {
+    "title": "Panneau d'administration",
+    "login": {
+      "title": "Connexion Admin",
+      "password": "Mot de passe",
+      "login": "Se connecter",
+      "invalidPassword": "Mot de passe invalide"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "posts": "Articles",
+      "createPost": "Créer un nouvel article",
+      "editPost": "Modifier l'article",
+      "deletePost": "Supprimer l'article",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet article ?",
+      "noPosts": "Aucun article trouvé.",
+      "postForm": {
+        "title": "Titre",
+        "content": "Contenu",
+        "excerpt": "Extrait",
+        "author": "Auteur",
+        "tags": "Étiquettes (séparées par des virgules)",
+        "imageUrl": "URL de l'image",
+        "save": "Enregistrer l'article",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "footer": {
+    "description": "Construire une communauté Rust vibrante, inclusive et passionnée au Cameroun. Rejoignez-nous alors que nous explorons les possibilités que Rust offre et construisons des projets incroyables ensemble.",
+    "quickLinks": "Liens rapides",
+    "community": "Communauté",
+    "followUs": "Suivez-nous",
+    "copyright": "© 2024 Rust Cameroun. Tous droits réservés.",
+    "builtWith": "Construit avec Rust et React"
+  },
+  "error": {
+    "pageNotFound": "Page non trouvée",
+    "pageNotFoundDescription": "La page que vous recherchez n'existe pas.",
+    "goHome": "Retour à l'accueil",
+    "somethingWentWrong": "Quelque chose s'est mal passé",
+    "tryAgain": "Réessayer"
+  }
+}

@@ -1,0 +1,39 @@
+import axios from 'axios';
+import { Post } from '../types';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const postsApi = {
+  getAll: async (): Promise<Post[]> => {
+    const response = await api.get('/posts');
+    return response.data;
+  },
+
+  getBySlug: async (slug: string): Promise<Post> => {
+    const response = await api.get(`/posts/${slug}`);
+    return response.data;
+  },
+
+  create: async (post: Omit<Post, 'id' | 'slug' | 'date'>): Promise<Post> => {
+    const response = await api.post('/posts', post);
+    return response.data;
+  },
+
+  update: async (id: string, post: Partial<Post>): Promise<Post> => {
+    const response = await api.put(`/posts/${id}`, post);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/posts/delete/${id}`);
+  },
+};
+
+export default api;

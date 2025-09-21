@@ -1,0 +1,186 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "readMore": "Read More",
+    "learnMore": "Learn More",
+    "joinEvents": "Join Events",
+    "aboutUs": "About Us",
+    "events": "Events",
+    "blog": "Blog",
+    "home": "Home",
+    "about": "About",
+    "admin": "Admin",
+    "login": "Login",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "viewAll": "View All",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "submit": "Submit",
+    "reset": "Reset",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "language": "Language",
+    "english": "English",
+    "french": "Français"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "events": "Events",
+    "blog": "Blog",
+    "admin": "Admin"
+  },
+  "home": {
+    "title": "Welcome to Rust Cameroon",
+    "subtitle": "Building a vibrant, inclusive, and passionate Rust community right here in Cameroon. Whether you're a seasoned Rustacean or just starting your journey, you're in the right place.",
+    "learnMore": "Learn More",
+    "joinEvents": "Join Events",
+    "mission": {
+      "title": "Our Mission",
+      "description": "We're dedicated to fostering a strong Rust community in Cameroon by organizing meetups, workshops, and educational events. Our goal is to make Rust accessible to everyone, from beginners to experts."
+    },
+    "community": {
+      "title": "Join Our Community",
+      "description": "Connect with fellow Rust enthusiasts, share knowledge, and collaborate on exciting projects. Together, we're building the future of systems programming in Cameroon."
+    },
+    "recentPosts": {
+      "title": "Recent Posts",
+      "viewAll": "View All Posts"
+    }
+  },
+  "about": {
+    "title": "About Rust Cameroon",
+    "subtitle": "We're building a vibrant, inclusive, and passionate Rust community right here in Cameroon.",
+    "mission": {
+      "title": "Our Mission",
+      "content": "Our mission is to promote the use of Rust, foster collaboration, and empower developers through learning and sharing. We believe that Rust's memory safety, performance, and developer experience make it an excellent choice for building reliable software systems.",
+      "additional": "Through meetups, workshops, and events, we aim to connect Rust enthusiasts, share knowledge, and build amazing projects together. Whether you're interested in systems programming, web development, embedded systems, or blockchain, Rust has something to offer."
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "items": [
+        "Monthly meetups and workshops",
+        "Technical talks and presentations", 
+        "Collaborative coding sessions",
+        "Open source project contributions"
+      ]
+    },
+    "vision": {
+      "title": "Our Vision",
+      "content": "To become the leading Rust community in Central Africa, known for our technical excellence, inclusive culture, and innovative projects that solve real-world problems using Rust."
+    },
+    "values": {
+      "title": "Our Values",
+      "inclusivity": {
+        "title": "Inclusivity",
+        "content": "We welcome developers of all skill levels, backgrounds, and experiences. Everyone has something valuable to contribute to our community."
+      },
+      "learning": {
+        "title": "Continuous Learning",
+        "content": "We believe in the power of continuous learning and knowledge sharing. Our community thrives on mutual support and collaborative learning."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "content": "We encourage innovative thinking and creative problem-solving using Rust's unique features and capabilities."
+      }
+    },
+    "join": {
+      "title": "Join Us",
+      "content": "Ready to be part of something amazing? Join our community today and start your Rust journey with us. Whether you're a complete beginner or an experienced developer, there's a place for you in Rust Cameroon."
+    }
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Join our upcoming events and connect with the Rust community in Cameroon",
+    "upcoming": "Upcoming Events",
+    "past": "Past Events",
+    "noEvents": "No events scheduled at the moment. Check back soon!",
+    "register": "Register",
+    "details": "Event Details",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "description": "Description",
+    "speakers": "Speakers",
+    "agenda": "Agenda"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Latest insights, tutorials, and news from the Rust community",
+    "recentPosts": "Recent Posts",
+    "allPosts": "All Posts",
+    "noPosts": "No posts available at the moment.",
+    "readMore": "Read More",
+    "publishedOn": "Published on",
+    "by": "by",
+    "tags": "Tags",
+    "relatedPosts": "Related Posts"
+  },
+  "post": {
+    "backToBlog": "Back to Blog",
+    "share": "Share",
+    "publishedOn": "Published on",
+    "by": "by",
+    "tags": "Tags",
+    "relatedPosts": "Related Posts",
+    "noRelatedPosts": "No related posts found."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "login": {
+      "title": "Admin Login",
+      "password": "Password",
+      "login": "Login",
+      "invalidPassword": "Invalid password"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "posts": "Posts",
+      "createPost": "Create New Post",
+      "editPost": "Edit Post",
+      "deletePost": "Delete Post",
+      "confirmDelete": "Are you sure you want to delete this post?",
+      "noPosts": "No posts found.",
+      "postForm": {
+        "title": "Title",
+        "content": "Content",
+        "excerpt": "Excerpt",
+        "author": "Author",
+        "tags": "Tags (comma-separated)",
+        "imageUrl": "Image URL",
+        "save": "Save Post",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "footer": {
+    "description": "Building a vibrant, inclusive, and passionate Rust community in Cameroon. Join us as we explore the possibilities Rust offers and build amazing projects together.",
+    "quickLinks": "Quick Links",
+    "community": "Community",
+    "followUs": "Follow Us",
+    "copyright": "© 2024 Rust Cameroon. All rights reserved.",
+    "builtWith": "Built with Rust and React"
+  },
+  "error": {
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "The page you're looking for doesn't exist.",
+    "goHome": "Go Home",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try Again"
+  }
+}
