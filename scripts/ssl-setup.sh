@@ -20,7 +20,7 @@ echo "🔒 Setting up SSL certificate for $DOMAIN..."
 
 # Update Nginx configuration with domain
 echo "🌐 Updating Nginx configuration..."
-sed -i "s/your-domain.com/$DOMAIN/g" $NGINX_CONFIG
+sed -i "s/rustcameroon.com/$DOMAIN/g" $NGINX_CONFIG
 
 # Test Nginx configuration
 echo "🧪 Testing Nginx configuration..."
