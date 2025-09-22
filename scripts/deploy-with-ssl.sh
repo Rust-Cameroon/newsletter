@@ -31,7 +31,7 @@ echo "🔗 Backend URL: $BACKEND_URL"
 # Step 1: Setup SSL certificates
 echo "🔒 Setting up SSL certificates..."
 cd "$PROJECT_DIR"
-./scripts/ssl-setup.sh "$DOMAIN"
+./scripts/ssl-setup-docker.sh "$DOMAIN"
 
 # Step 2: Check if SSL certificates are available
 if [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] && [ -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then

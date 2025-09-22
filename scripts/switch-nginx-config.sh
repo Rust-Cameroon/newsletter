@@ -18,13 +18,13 @@ DOCKER_COMPOSE_FILE="docker-compose.prod.yml"
 case $CONFIG_TYPE in
     "http")
         echo "🔄 Switching to HTTP-only configuration..."
-        sed -i 's|./frontend/nginx-docker.conf|./frontend/nginx-http-only.conf|g' $DOCKER_COMPOSE_FILE
+        sed -i 's|NGINX_CONFIG=https|NGINX_CONFIG=http|g' $DOCKER_COMPOSE_FILE
         echo "✅ Switched to HTTP-only configuration"
         echo "📝 Note: This configuration will work without SSL certificates"
         ;;
     "https")
         echo "🔄 Switching to HTTPS configuration..."
-        sed -i 's|./frontend/nginx-http-only.conf|./frontend/nginx-docker.conf|g' $DOCKER_COMPOSE_FILE
+        sed -i 's|NGINX_CONFIG=http|NGINX_CONFIG=https|g' $DOCKER_COMPOSE_FILE
         echo "✅ Switched to HTTPS configuration"
         echo "📝 Note: SSL certificates must be available at /etc/letsencrypt/live/rustcameroon.com/"
         ;;

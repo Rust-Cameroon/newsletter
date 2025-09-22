@@ -11,6 +11,7 @@ services:
     environment:
       - BACKEND_URL=http://backend:8000
       - VITE_API_URL=/api
+      - NGINX_CONFIG=http
     depends_on:
       - backend
     restart: unless-stopped

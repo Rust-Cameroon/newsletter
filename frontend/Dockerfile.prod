@@ -8,11 +8,13 @@ RUN apk add --no-cache gettext
 COPY dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration template
-COPY nginx-http-only.conf /etc/nginx/templates/default.conf.template
+# Use environment variable to choose between HTTP-only and HTTPS config
+COPY nginx-http-only.conf /etc/nginx/templates/default-http.conf.template
+COPY nginx-docker.conf /etc/nginx/templates/default-https.conf.template
 
 # Expose ports 80 and 443
 EXPOSE 80 443
 
 # Start Nginx with environment variable substitution
-# nginx:alpine automatically processes templates in /etc/nginx/templates/
-CMD ["nginx", "-g", "daemon off;"]
+# Choose template based on NGINX_CONFIG environment variable
+CMD ["sh", "-c", "if [ \"$NGINX_CONFIG\" = \"https\" ]; then cp /etc/nginx/templates/default-https.conf.template /etc/nginx/templates/default.conf.template; else cp /etc/nginx/templates/default-http.conf.template /etc/nginx/templates/default.conf.template; fi && nginx -g 'daemon off;'"]
