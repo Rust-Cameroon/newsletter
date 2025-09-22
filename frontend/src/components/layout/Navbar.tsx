@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
@@ -25,7 +26,7 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/assets/rustcm.svg" 
-              className="h-16 w-16" 
+              className="h-10 w-10" 
               alt="Rust Cameroon Logo" 
             />
             <span className="text-xl font-bold text-gray-900 dark:text-white font-mono">
