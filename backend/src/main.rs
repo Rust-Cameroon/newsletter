@@ -93,7 +93,7 @@ async fn create_post(
     // Save to JSON file
     if let Err(e) = save_posts_to_file(&posts) {
         error!("Failed to save posts: {}", e);
-        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save post").into_response();
+        return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to save post: {}", e)).into_response();
     }
 
     info!("Created post with slug: {}", slug);
@@ -116,7 +116,7 @@ async fn delete_post(
         // Save to JSON file
         if let Err(e) = save_posts_to_file(&posts) {
             error!("Failed to save posts: {}", e);
-            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post").into_response();
+            return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to delete post: {}", e)).into_response();
         }
         
         info!("Deleted post with id: {}", id);
