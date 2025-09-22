@@ -87,16 +87,6 @@ VITE_API_URL=http://localhost:8000/api
 # Admin Configuration
 VITE_ADMIN_PASSWORD=your-secure-password
 ```
-
-### Admin Panel
-
-- Access: `/admin`
-- Default password: `admin123` (change in production!)
-- Features:
-  - Create, edit, and delete posts
-  - Manage post metadata (tags, author, etc.)
-  - Preview posts before publishing
-
 ## Deployment
 
 ### AWS EC2 Deployment
