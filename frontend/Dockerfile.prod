@@ -1,20 +1,20 @@
-# Production stage with Nginx
 FROM nginx:alpine
 
-# Install envsubst for environment variable substitution
+# Install envsubst
 RUN apk add --no-cache gettext
 
-# Copy built application (assuming it's built locally)
+# Copy built app
 COPY dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration template
-# Use environment variable to choose between HTTP-only and HTTPS config
-COPY nginx-http-only.conf /etc/nginx/templates/default-http.conf.template
-COPY nginx-docker.conf /etc/nginx/templates/default-https.conf.template
+# Copy configs
+COPY nginx-http.conf /etc/nginx/templates/default-http.conf.template
+COPY nginx-https.conf /etc/nginx/templates/default-https.conf.template
 
-# Expose ports 80 and 443
+# Expose only 80 + 443
 EXPOSE 80 443
 
-# Start Nginx with environment variable substitution
-# Choose template based on NGINX_CONFIG environment variable
-CMD ["sh", "-c", "if [ \"$NGINX_CONFIG\" = \"https\" ]; then cp /etc/nginx/templates/default-https.conf.template /etc/nginx/templates/default.conf.template; else cp /etc/nginx/templates/default-http.conf.template /etc/nginx/templates/default.conf.template; fi && nginx -g 'daemon off;'"]
+# Always use HTTPS + generate nginx configs
+CMD sh -c '\
+  envsubst < /etc/nginx/templates/default-http.conf.template > /etc/nginx/conf.d/http.conf && \
+  envsubst < /etc/nginx/templates/default-https.conf.template > /etc/nginx/conf.d/https.conf && \
+  exec nginx -g "daemon off;"'
