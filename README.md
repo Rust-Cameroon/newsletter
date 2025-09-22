@@ -161,7 +161,7 @@ VITE_ADMIN_PASSWORD=your-secure-password
    scp backend/target/release/rust-cameroon-api user@server:/opt/rust-cameroon/
    
    # Configure Nginx
-   sudo cp nginx.conf /etc/nginx/sites-available/rust-cameroon
+   sudo cp nginx-https.conf /etc/nginx/sites-available/rust-cameroon
    sudo ln -s /etc/nginx/sites-available/rust-cameroon /etc/nginx/sites-enabled/
    sudo systemctl reload nginx
    ```

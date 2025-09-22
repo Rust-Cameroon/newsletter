@@ -1,49 +1,31 @@
-version: "3.8"
-
 services:
-  postgres:
-    image: postgres:latest
-    container_name: newsletter_db
-    restart: always
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: newsletterdb
+      - "80:80"
+      - "443:443"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      retries: 5
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - VITE_API_URL=/api
+      - NGINX_CONFIG=http
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   backend:
     build:
       context: ./backend
-    image: newsletter_backend
-    container_name: backend
-    restart: always
+      dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend/posts.json:/app/posts.json:ro
     environment:
-      DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/newsletterdb
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command: ["/app/newsletter"]
+      - RUST_LOG=info
+      - PORT=8000
+    restart: unless-stopped
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: newsletter_frontend
-    container_name: frontend
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-
-volumes:
-  postgres_data:

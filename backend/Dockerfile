@@ -1,31 +1,50 @@
-FROM rust:latest AS builder
+# Build stage
+FROM rust:1.75-alpine AS builder
 
-# Install Diesel CLI during the build stage
-RUN apt-get update && apt-get install -y libpq-dev && \
-    cargo install diesel_cli --no-default-features --features postgres
+# Install build dependencies
+RUN apk add --no-cache musl-dev
 
 WORKDIR /app
 
-COPY . .
+# Copy Cargo files
+COPY Cargo.toml Cargo.lock ./
 
+# Copy source code
+COPY src ./src
+
+# Build the application
 RUN cargo build --release
 
-FROM ubuntu 
+# Production stage
+FROM alpine:latest
 
-# Install the required PostgreSQL client libraries for Diesel
-RUN apt update && apt install -y libpq5
+# Install runtime dependencies
+RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
 
-# Copy the application binary and Diesel CLI binary
-COPY --from=builder /app/target/release/newsletter ./newsletter
-COPY --from=builder /usr/local/cargo/bin/diesel /usr/local/bin/diesel
+# Copy the binary from builder stage
+COPY --from=builder /app/target/release/rust-cameroon-api /app/rust-cameroon-api
 
-# Copy the migrations directory
-COPY ./src/database/2024-12-31-221109_migrations ./migrations
+# Copy posts data
+COPY posts.json /app/posts.json
 
-COPY .env .env
+# Create non-root user
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
 
+# Change ownership
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
 EXPOSE 8000
 
-CMD ["/app/newsletter"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8000/ || exit 1
+
+# Start the application
+CMD ["./rust-cameroon-api"]

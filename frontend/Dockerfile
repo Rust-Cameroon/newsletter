@@ -1,17 +1,19 @@
-# Build stage
-FROM node:latest AS build
-WORKDIR /frontend
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Serve with Nginx
 FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=build /frontend/dist ./
-COPY nginx-https.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Install envsubst
+RUN apk add --no-cache gettext
+
+# Copy built app
+COPY dist /usr/share/nginx/html
+
+# Copy configs
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose only 80 + 443
+EXPOSE 80 443
+
+# Always use HTTPS + generate nginx configs
+CMD sh -c '\
+  envsubst < /etc/nginx/templates/default-http.conf.template > /etc/nginx/conf.d/http.conf && \
+  envsubst < /etc/nginx/templates/default-https.conf.template > /etc/nginx/conf.d/https.conf && \
+  exec nginx -g "daemon off;"'

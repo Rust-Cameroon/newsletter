@@ -112,7 +112,7 @@ sudo chmod +x /var/www/rust-cameroon/api/rust-cameroon-api
 
 ```bash
 # Copy Nginx configuration
-sudo cp nginx.conf /etc/nginx/sites-available/rust-cameroon
+sudo cp nginx-https.conf /etc/nginx/sites-available/rust-cameroon
 
 # Update domain in configuration
 sudo sed -i 's/your-domain.com/your-actual-domain.com/g' /etc/nginx/sites-available/rust-cameroon
