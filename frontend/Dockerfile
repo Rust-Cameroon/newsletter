@@ -7,7 +7,7 @@ RUN apk add --no-cache gettext
 COPY dist /usr/share/nginx/html
 
 # Copy Nginx template (with ${BACKEND_URL})
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
+COPY nginx.conf /etc/nginx/nginx.con.template
 
 # Expose HTTP + HTTPS
 EXPOSE 80 443
