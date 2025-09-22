@@ -7,11 +7,11 @@ RUN apk add --no-cache gettext
 COPY dist /usr/share/nginx/html
 
 # Copy Nginx template (with ${BACKEND_URL})
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Expose HTTP + HTTPS
 EXPOSE 80 443
 
 # Substitute environment variables and start Nginx
-CMD envsubst '$BACKEND_URL' < /etc/nginx/nginx.conf > /etc/nginx/nginx.conf \
+CMD envsubst '$BACKEND_URL' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf \
     && nginx -g 'daemon off;'
