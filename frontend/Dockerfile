@@ -12,3 +12,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose only 80 + 443
 EXPOSE 80 443
 
+CMD ["nginx", "-g", "daemon off;"]
