@@ -28,7 +28,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/posts.json:/app/posts.json:ro
+      - ./backend/posts.json:/app/posts.json:rw
     environment:
       - RUST_LOG=info
       - PORT=8000
