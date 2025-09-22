@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { Post } from '../types';
 
-const API_BASE_URL = 'https://rustcameroon.com/api';
+// const API_BASE_URL = "https://rustcameroon.com/api";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "https://rustcameroon.com/api",
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,5 +35,3 @@ export const postsApi = {
     await api.delete(`/posts/delete/${id}`);
   },
 };
-
-export default api;
