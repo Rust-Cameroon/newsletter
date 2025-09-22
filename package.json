@@ -14,12 +14,21 @@
     "setup:ssl": "./scripts/ssl-setup.sh",
     "start:services": "./scripts/start-services.sh"
   },
-  "keywords": ["rust", "cameroon", "community", "website", "react"],
+  "keywords": [
+    "rust",
+    "cameroon",
+    "community",
+    "website",
+    "react"
+  ],
   "author": "Rust Cameroon Community",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "concurrently": "^9.0.1"
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "axios": "^1.12.2",
+    "concurrently": "^9.0.1",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@types/node": "^22.10.5"
