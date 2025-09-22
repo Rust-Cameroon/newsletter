@@ -3,13 +3,15 @@ FROM nginx:alpine
 # Install envsubst
 RUN apk add --no-cache gettext
 
-# Copy built app
+# Copy built React app
 COPY dist /usr/share/nginx/html
 
-# Copy configs
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy Nginx template (with ${BACKEND_URL})
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
-# Expose only 80 + 443
+# Expose HTTP + HTTPS
 EXPOSE 80 443
 
-CMD ["nginx", "-g", "daemon off;"]
+# Substitute environment variables and start Nginx
+CMD envsubst '$BACKEND_URL' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf \
+    && nginx -g 'daemon off;'
