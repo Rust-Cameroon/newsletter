@@ -33,8 +33,8 @@ server {
     listen 443 ssl http2;
     server_name $domain www.$domain;
     
-    ssl_certificate /etc/letsencrypt/live/$domain/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
+    ssl_certificate ./ssl/fullchain.pem;
+    ssl_certificate_key ./ssl/privkey.pem;
     
     # SSL Security Settings
     ssl_protocols TLSv1.2 TLSv1.3;
