@@ -8,6 +8,7 @@ services:
       - "443:443"
     volumes:
       - /etc/letsencrypt/live/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
+      - /etc/letsencrypt/archive/rustcameroon.com-0001:/etc/letsencrypt/archive/rustcameroon.com-0001:ro
     environment:
       - BACKEND_URL=http://backend:8000
       - VITE_API_URL=/api
@@ -16,6 +17,7 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
 
   backend:
     build:
