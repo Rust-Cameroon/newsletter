@@ -23,6 +23,7 @@ const Admin: React.FC = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      console.log('Fetching posts...');
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
         const posts = await postsApi.getAll();
