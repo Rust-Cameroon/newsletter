@@ -16,7 +16,10 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
 
   backend:
     build:
@@ -30,4 +33,3 @@ services:
       - RUST_LOG=info
       - PORT=8000
     restart: unless-stopped
-
