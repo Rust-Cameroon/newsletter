@@ -18,6 +18,9 @@ http {
     gzip on;
     gzip_types text/plain text/css application/javascript application/json text/xml application/xml+rss;
 
+    # Increase header buffer sizes to handle large cookies/headers
+    large_client_header_buffers 8 32k;
+
     # Server block for HTTP -> HTTPS redirect
     server {
         listen 80;

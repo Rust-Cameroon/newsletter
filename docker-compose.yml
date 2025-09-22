@@ -9,7 +9,7 @@ services:
     volumes:
       - /root/certs/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
     environment:
-      - BACKEND_URL=https://rustcameroon.com
+      - BACKEND_URL=http://backend:8000
       - VITE_API_URL=/api
       - NGINX_CONFIG=https
     user: "0:0"
