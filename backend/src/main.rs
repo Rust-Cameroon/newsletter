@@ -14,6 +14,7 @@ use tower_http::{
     services::ServeDir,
     trace::TraceLayer,
 };
+use tracing::{info, error, instrument};
 use tracing_subscriber;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -42,23 +43,33 @@ pub struct NewPost {
 // In-memory storage for posts (in production, use a database)
 type PostsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, Post>>>;
 
+#[instrument]
 async fn get_posts(posts: axum::extract::State<PostsStorage>) -> impl IntoResponse {
     let posts = posts.lock().unwrap();
     let posts_vec: Vec<Post> = posts.values().cloned().collect();
+    info!("Fetched all posts");
     Json(posts_vec)
 }
 
+#[instrument]
 async fn get_post(
     Path(slug): Path<String>,
     posts: axum::extract::State<PostsStorage>,
 ) -> impl IntoResponse {
     let posts = posts.lock().unwrap();
     match posts.get(&slug) {
-        Some(post) => Json(post.clone()).into_response(),
-        None => (StatusCode::NOT_FOUND, "Post not found").into_response(),
+        Some(post) => {
+            info!("Fetched post with slug: {}", slug);
+            Json(post.clone()).into_response()
+        }
+        None => {
+            error!("Post not found with slug: {}", slug);
+            (StatusCode::NOT_FOUND, "Post not found").into_response()
+        }
     }
 }
 
+#[instrument]
 async fn create_post(
     posts: axum::extract::State<PostsStorage>,
     Json(new_post): Json<NewPost>,
@@ -81,13 +92,15 @@ async fn create_post(
     
     // Save to JSON file
     if let Err(e) = save_posts_to_file(&posts) {
-        tracing::error!("Failed to save posts: {}", e);
+        error!("Failed to save posts: {}", e);
         return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save post").into_response();
     }
 
+    info!("Created post with slug: {}", slug);
     (StatusCode::CREATED, Json(post)).into_response()
 }
 
+#[instrument]
 async fn delete_post(
     Path(id): Path<String>,
     posts: axum::extract::State<PostsStorage>,
@@ -102,12 +115,14 @@ async fn delete_post(
         
         // Save to JSON file
         if let Err(e) = save_posts_to_file(&posts) {
-            tracing::error!("Failed to save posts: {}", e);
+            error!("Failed to save posts: {}", e);
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post").into_response();
         }
         
+        info!("Deleted post with id: {}", id);
         (StatusCode::OK, "Post deleted successfully").into_response()
     } else {
+        error!("Post not found with id: {}", id);
         (StatusCode::NOT_FOUND, "Post not found").into_response()
     }
 }
@@ -162,7 +177,7 @@ async fn main() {
     let port = std::env::var("PORT").unwrap_or_else(|_| "8000".to_string());
     let socket = format!("0.0.0.0:{}", port);
     
-    tracing::info!("Server starting on {}", socket);
+    info!("Server starting on {}", socket);
     
     let listener = tokio::net::TcpListener::bind(socket).await.unwrap();
     axum::serve(listener, app).await.unwrap();
