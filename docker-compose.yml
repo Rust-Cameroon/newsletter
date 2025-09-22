@@ -7,11 +7,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /etc/letsencrypt/live/rustcameroon.com/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/rustcameroon.com/privkey.pem:/etc/ssl/private/privkey.pem:ro
     environment:
       - BACKEND_URL=http://backend:8000
       - VITE_API_URL=/api
-      - NGINX_CONFIG=http
+      - NGINX_CONFIG=https
+    user: "0:0"
     depends_on:
       - backend
     restart: unless-stopped
