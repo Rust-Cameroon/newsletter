@@ -14,8 +14,8 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-3 mb-4">
               <img 
                 src="/assets/rustcm.svg" 
+                alt="Rust Cameroon Logo"
                 className="h-8 w-8" 
-                alt="Rust Cameroon Logo" 
               />
               <span className="text-xl font-bold font-mono">Rust Cameroon</span>
             </div>

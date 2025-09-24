@@ -26,8 +26,8 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/assets/rustcm.svg" 
+              alt="Rust Cameroon Logo"
               className="h-10 w-10" 
-              alt="Rust Cameroon Logo" 
             />
             <span className="text-xl font-bold text-gray-900 dark:text-white font-mono">
               Rust Cameroon

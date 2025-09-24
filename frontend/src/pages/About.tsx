@@ -8,11 +8,47 @@ const About: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>About Us - Rust Cameroon</title>
+        <title>About Us - Rust Cameroon Community | Mission & Vision</title>
         <meta 
           name="description" 
-          content="Learn about Rust Cameroon community, our mission, and how we're building the future with Rust programming language." 
+          content="Learn about Rust Cameroon community, our mission, and how we're building the future with Rust programming language. Discover our goals, values, and community initiatives." 
         />
+        <meta name="keywords" content="about rust cameroon, rust community cameroon, programming community, software development cameroon, rust foundation, open source community" />
+        <link rel="canonical" href="https://rustcameroon.com/about" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="About Us - Rust Cameroon Community" />
+        <meta property="og:description" content="Learn about Rust Cameroon community, our mission, and how we're building the future with Rust programming language." />
+        <meta property="og:url" content="https://rustcameroon.com/about" />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content="About Us - Rust Cameroon Community" />
+        <meta name="twitter:description" content="Learn about Rust Cameroon community, our mission, and how we're building the future with Rust programming language." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "name": "About Rust Cameroon",
+          "description": "Learn about Rust Cameroon community, our mission, and how we're building the future with Rust programming language.",
+          "url": "https://rustcameroon.com/about",
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "Rust Cameroon",
+            "description": "A vibrant community of Rust developers in Cameroon working together to build the future with Rust programming language.",
+            "url": "https://rustcameroon.com",
+            "logo": "https://rustcameroon.com/assets/rustcm.svg",
+            "foundingDate": "2023",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "CM",
+              "addressRegion": "Cameroon"
+            }
+          }
+        })}
+        </script>
       </Helmet>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

@@ -10,11 +10,44 @@ const Blog: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Blog - Rust Cameroon</title>
+        <title>Blog - Rust Cameroon | Articles, Tutorials & Community Insights</title>
         <meta 
           name="description" 
-          content="Read the latest articles, tutorials, and insights from the Rust Cameroon community." 
+          content="Read the latest articles, tutorials, and insights from the Rust Cameroon community. Learn Rust programming, best practices, and stay updated with community news." 
         />
+        <meta name="keywords" content="rust blog, rust tutorials, rust articles, programming tutorials, rust community, software development, rust programming language, cameroon tech blog" />
+        <link rel="canonical" href="https://rustcameroon.com/blog" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Blog - Rust Cameroon | Articles, Tutorials & Community Insights" />
+        <meta property="og:description" content="Read the latest articles, tutorials, and insights from the Rust Cameroon community." />
+        <meta property="og:url" content="https://rustcameroon.com/blog" />
+        <meta property="og:type" content="blog" />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content="Blog - Rust Cameroon | Articles, Tutorials & Community Insights" />
+        <meta name="twitter:description" content="Read the latest articles, tutorials, and insights from the Rust Cameroon community." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "Rust Cameroon Blog",
+          "description": "Read the latest articles, tutorials, and insights from the Rust Cameroon community.",
+          "url": "https://rustcameroon.com/blog",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Rust Cameroon",
+            "logo": "https://rustcameroon.com/assets/rustcm.svg"
+          },
+          "inLanguage": "en",
+          "about": {
+            "@type": "Thing",
+            "name": "Rust Programming Language"
+          }
+        })}
+        </script>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

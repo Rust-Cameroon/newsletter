@@ -1,0 +1,25 @@
+{
+  "name": "Rust Cameroon - Building the Future with Rust",
+  "short_name": "Rust Cameroon",
+  "description": "Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ea580c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["education", "technology", "programming"],
+  "lang": "en",
+  "dir": "ltr"
+}

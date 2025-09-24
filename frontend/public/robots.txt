@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rustcameroon.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin area
+Disallow: /admin
+
+# Allow all other content
+Allow: /blog
+Allow: /about
+Allow: /events
+Allow: /assets/

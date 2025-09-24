@@ -42,11 +42,49 @@ const Events: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Events - Rust Cameroon</title>
+        <title>Events - Rust Cameroon | Meetups, Workshops & Community Events</title>
         <meta 
           name="description" 
-          content="Join Rust Cameroon events, meetups, and workshops. Learn Rust programming and connect with the community." 
+          content="Join Rust Cameroon events, meetups, and workshops. Learn Rust programming and connect with the community. Find upcoming events, workshops, and networking opportunities." 
         />
+        <meta name="keywords" content="rust events, rust meetups, rust workshops, programming events cameroon, tech community events, rust community, software development events" />
+        <link rel="canonical" href="https://rustcameroon.com/events" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Events - Rust Cameroon | Meetups, Workshops & Community Events" />
+        <meta property="og:description" content="Join Rust Cameroon events, meetups, and workshops. Learn Rust programming and connect with the community." />
+        <meta property="og:url" content="https://rustcameroon.com/events" />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content="Events - Rust Cameroon | Meetups, Workshops & Community Events" />
+        <meta name="twitter:description" content="Join Rust Cameroon events, meetups, and workshops. Learn Rust programming and connect with the community." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Rust Cameroon Community Events",
+          "description": "Join Rust Cameroon events, meetups, and workshops. Learn Rust programming and connect with the community.",
+          "url": "https://rustcameroon.com/events",
+          "organizer": {
+            "@type": "Organization",
+            "name": "Rust Cameroon",
+            "url": "https://rustcameroon.com"
+          },
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": "Cameroon",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "CM"
+            }
+          }
+        })}
+        </script>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

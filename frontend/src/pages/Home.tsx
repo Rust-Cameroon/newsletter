@@ -14,11 +14,44 @@ const Home: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Rust Cameroon - Building the Future with Rust</title>
+        <title>Rust Cameroon - Building the Future with Rust | Community & Development</title>
         <meta 
           name="description" 
-          content="Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language." 
+          content="Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language. Connect with developers, attend events, and contribute to open source." 
         />
+        <meta name="keywords" content="rust, programming, cameroon, community, development, systems programming, web development, open source, software engineering, africa, tech community" />
+        <link rel="canonical" href="https://rustcameroon.com" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Rust Cameroon - Building the Future with Rust" />
+        <meta property="og:description" content="Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language." />
+        <meta property="og:url" content="https://rustcameroon.com" />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter */}
+        <meta name="twitter:title" content="Rust Cameroon - Building the Future with Rust" />
+        <meta name="twitter:description" content="Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Rust Cameroon",
+          "url": "https://rustcameroon.com",
+          "description": "Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Rust Cameroon",
+            "logo": "https://rustcameroon.com/assets/rustcm.svg"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://rustcameroon.com/blog?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}
+        </script>
       </Helmet>
 
       {/* Hero Section */}
