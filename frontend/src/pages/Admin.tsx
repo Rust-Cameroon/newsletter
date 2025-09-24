@@ -15,7 +15,8 @@ const Admin: React.FC = () => {
     content: '',
     excerpt: '',
     author: '',
-    tags: ''
+    tags: '',
+    image_url: ''
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -96,7 +97,8 @@ const Admin: React.FC = () => {
         content: '',
         excerpt: '',
         author: '',
-        tags: ''
+        tags: '',
+        image_url: ''
       });
       setSelectedFile(null);
     } catch (error) {
@@ -111,7 +113,8 @@ const Admin: React.FC = () => {
       content: post.content,
       excerpt: post.excerpt,
       author: post.author,
-      tags: post.tags.join(', ')
+      tags: post.tags.join(', '),
+      image_url: post.image_url || ''
     });
     setShowCreateForm(true);
   };
