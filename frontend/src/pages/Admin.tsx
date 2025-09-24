@@ -15,9 +15,9 @@ const Admin: React.FC = () => {
     content: '',
     excerpt: '',
     author: '',
-    tags: '',
-    image_url: ''
+    tags: ''
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
 
@@ -59,22 +59,34 @@ const Admin: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const tags = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-      
       if (editingPost) {
-        // Update existing post
-        const updatedPost = await postsApi.update(editingPost.id, {
-          ...formData,
-          tags
-        });
+        // Update existing post (keep JSON for updates)
+        const updateData = {
+          title: formData.title,
+          content: formData.content,
+          excerpt: formData.excerpt,
+          author: formData.author,
+          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+        };
+        const updatedPost = await postsApi.update(editingPost.id, updateData);
         dispatch({ type: 'UPDATE_POST', payload: updatedPost });
         setEditingPost(null);
       } else {
-        // Create new post
-        const newPost = await postsApi.create({
-          ...formData,
-          tags
-        });
+        // Create new post with multipart
+        const multipartData = new FormData();
+        multipartData.append('title', formData.title);
+        multipartData.append('content', formData.content);
+        multipartData.append('excerpt', formData.excerpt);
+        multipartData.append('author', formData.author);
+        multipartData.append('tags', formData.tags);
+        
+        // Add file if selected
+        if (selectedFile) {
+          multipartData.append('file', selectedFile);
+        }
+        
+        console.log('Creating post with multipart data');
+        const newPost = await postsApi.create(multipartData);
         dispatch({ type: 'ADD_POST', payload: newPost });
       }
       
@@ -84,9 +96,9 @@ const Admin: React.FC = () => {
         content: '',
         excerpt: '',
         author: '',
-        tags: '',
-        image_url: ''
+        tags: ''
       });
+      setSelectedFile(null);
     } catch (error) {
       alert('Failed to save post');
     }
@@ -99,8 +111,7 @@ const Admin: React.FC = () => {
       content: post.content,
       excerpt: post.excerpt,
       author: post.author,
-      tags: post.tags.join(', '),
-      image_url: post.image_url || ''
+      tags: post.tags.join(', ')
     });
     setShowCreateForm(true);
   };
@@ -113,6 +124,13 @@ const Admin: React.FC = () => {
       } catch (error) {
         alert('Failed to delete post');
       }
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
     }
   };
 
@@ -263,16 +281,21 @@ const Admin: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Image URL (optional)
+                    <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Post Image (optional)
                     </label>
                     <input
-                      type="url"
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                      type="file"
+                      id="file-upload"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300"
                     />
+                    {selectedFile && (
+                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        Selected: {selectedFile.name}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -290,6 +313,7 @@ const Admin: React.FC = () => {
                         tags: '',
                         image_url: ''
                       });
+                      setSelectedFile(null);
                     }}
                     className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                   >

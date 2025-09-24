@@ -1,8 +1,10 @@
+# Production Docker Compose file
+# This file is used for production deployments with GHCR images
+# The workflow will dynamically update the image tags with latest and SHA versions
+
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/your-username/your-repo/frontend:latest
     ports:
       - "80:80"
       - "443:443"
@@ -23,9 +25,7 @@ services:
         hard: 65536
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/your-username/your-repo/backend:latest
     ports:
       - "8000:8000"
     volumes:

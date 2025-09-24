@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { version = "0.7.7", features = ["macros"] }
+axum = { version = "0.7.7", features = ["macros", "multipart"] }
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
@@ -14,3 +14,8 @@ tower-http = { version = "0.6.1", features = ["cors", "trace", "fs"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 uuid = { version = "1.0", features = ["v4", "serde"] }
+aws-sdk-s3 = "1.0"
+aws-config = "1.0"
+bytes = "1.0"
+mime_guess = "2.0"
+tokio-util = { version = "0.7", features = ["io"] }

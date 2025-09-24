@@ -23,10 +23,18 @@ export const postsApi = {
     return response.data;
   },
 
-  create: async (post: Omit<Post, 'id' | 'slug' | 'date'>): Promise<Post> => {
+  create: async (formData: FormData): Promise<Post> => {
     console.log('Creating post at:', API_BASE_URL + '/posts');
-    const response = await api.post('/posts', post);
-    return response.data;
+    const response = await fetch(API_BASE_URL + '/posts', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to create post: ${response.statusText}`);
+    }
+    
+    return response.json();
   },
 
   update: async (id: string, post: Partial<Post>): Promise<Post> => {
@@ -39,4 +47,5 @@ export const postsApi = {
     console.log('Deleting post at:', API_BASE_URL + `/posts/delete/${id}`);
     await api.delete(`/posts/delete/${id}`);
   },
+
 };
