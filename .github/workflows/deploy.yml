@@ -7,8 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_FRONTEND: newsletter/frontend
-  IMAGE_NAME_BACKEND:  newsletter/backend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
 
 jobs:
   build-and-push:
