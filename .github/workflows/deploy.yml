@@ -170,7 +170,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Set application directory
-            APP_DIR="${EC2_APP_DIR:-/home/ubuntu/app}"
+            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
             
             echo "Validating deployment environment..."
             echo "Application directory: $APP_DIR"
@@ -203,7 +203,7 @@ jobs:
           username: ${{ secrets.EC2_USER || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            APP_DIR="${EC2_APP_DIR:-/home/ubuntu/app}"
+            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
             
             sudo bash -c '
               cd "'"$APP_DIR"'"
