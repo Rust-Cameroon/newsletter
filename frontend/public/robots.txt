@@ -15,3 +15,4 @@ Allow: /blog
 Allow: /about
 Allow: /events
 Allow: /assets/
+

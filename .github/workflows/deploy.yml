@@ -108,50 +108,172 @@ jobs:
                 - "80:80"
                 - "443:443"
               environment:
-                - BACKEND_URL=https://rustcameroon.com
-                - VITE_API_URL=https://rustcameroon.com/api
+                - BACKEND_URL=http://backend:8000
+                - VITE_API_URL=${{ secrets.FRONTEND_API_URL || 'https://rustcameroon.com/api' }}
+                - NGINX_CONFIG=https
               volumes:
                 - /root/certs/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
+              user: "0:0"
+              depends_on:
+                - backend
+                - minio
+              restart: unless-stopped
+              ulimits:
+                nofile:
+                  soft: 65536
+                  hard: 65536
 
             backend:
               image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.GIT_SHA }}
               restart: unless-stopped
               environment:
-                - DATABASE_URL=postgres://...
-                - MINIO_ENDPOINT=minio:9000
+                - RUST_LOG=info
+                - PORT=8000
+                - DATABASE_URL=${{ secrets.DATABASE_URL || 'postgres://user:password@localhost:5432/rustcameroon' }}
+                - MINIO_ENDPOINT=http://minio:9000
+                - MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY || 'minioadmin' }}
+                - MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY || 'minioadmin123' }}
+                - MINIO_BUCKET=${{ secrets.MINIO_BUCKET || 'rust-cameroon-images' }}
+              volumes:
+                - ./backend/posts.json:/app/posts.json:rw
+              depends_on:
+                - minio
+              restart: unless-stopped
+
+            minio:
+              image: minio/minio:latest
+              ports:
+                - "9000:9000"
+                - "9001:9001"
+              volumes:
+                - minio_data:/data
+              environment:
+                - MINIO_ROOT_USER=${{ secrets.MINIO_ACCESS_KEY || 'minioadmin' }}
+                - MINIO_ROOT_PASSWORD=${{ secrets.MINIO_SECRET_KEY || 'minioadmin123' }}
+              command: server /data --console-address ":9001"
+              restart: unless-stopped
+              healthcheck:
+                test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+                interval: 30s
+                timeout: 20s
+                retries: 3
+
+          volumes:
+            minio_data:
           EOF
 
-      - name: Deploy as root
+      - name: Validate deployment environment
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
+          username: ${{ secrets.EC2_USER || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Switch to root and execute deployment commands
-            sudo bash -c '
-              cd Newsletter
+            # Set application directory
+            APP_DIR="${EC2_APP_DIR:-/home/ubuntu/app}"
+            
+            echo "Validating deployment environment..."
+            echo "Application directory: $APP_DIR"
+            
+            # Check if directory exists
+            if [ ! -d "$APP_DIR" ]; then
+              echo "Error: Application directory $APP_DIR does not exist"
+              exit 1
+            fi
+            
+            # Check if Docker is running
+            if ! docker info > /dev/null 2>&1; then
+              echo "Error: Docker is not running"
+              exit 1
+            fi
+            
+            # Check disk space (at least 1GB free)
+            AVAILABLE=$(df "$APP_DIR" | tail -1 | awk '{print $4}')
+            if [ "$AVAILABLE" -lt 1000000 ]; then
+              echo "Error: Insufficient disk space. Available: ${AVAILABLE}KB"
+              exit 1
+            fi
+            
+            echo "Environment validation passed!"
 
+      - name: Save current deployment state
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER || 'ubuntu' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            APP_DIR="${EC2_APP_DIR:-/home/ubuntu/app}"
+            
+            sudo bash -c '
+              cd "'"$APP_DIR"'"
+              
+              # Save current deployment state for rollback
+              if [ -f "docker-compose.prod.yml" ]; then
+                echo "Saving current deployment state..."
+                cp docker-compose.prod.yml docker-compose.rollback.yml
+                echo "Current state saved for rollback"
+              else
+                echo "No existing deployment found, skipping rollback preparation"
+              fi
+            '
+
+      - name: Deploy with proper rollback
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER || 'ubuntu' }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
+            HEALTH_CHECK_URL="${{ secrets.HEALTH_CHECK_URL || 'https://rustcameroon.com/api' }}"
+            
+            sudo bash -c '
+              cd "'"$APP_DIR"'"
+              
+              echo "Current directory: $(pwd)"
+              echo "Directory contents:"
+              ls -la
+              
               echo "Pulling latest images..."
               docker compose -f docker-compose.prod.yml pull
-
+              
               echo "Stopping old containers..."
               docker compose -f docker-compose.prod.yml down
-
+              
               echo "Starting new containers..."
               docker compose -f docker-compose.prod.yml up -d --no-deps
-
-              # Health check
+              
+              # Health check with proper rollback
               echo "Waiting for services to start..."
               sleep 30
-              if ! curl -f -s --max-time 10 http://localhost:8000 > /dev/null; then
+              
+              echo "Performing health check on: '"$HEALTH_CHECK_URL"'"
+              if ! curl -f -s --max-time 10 "'"$HEALTH_CHECK_URL"'" > /dev/null; then
                 echo "Health check failed! Rolling back..."
                 docker compose -f docker-compose.prod.yml down
-                docker compose -f docker-compose.rollback.yml pull
-                docker compose -f docker-compose.rollback.yml up -d --no-deps
-                exit 1
+                
+                if [ -f "docker-compose.rollback.yml" ]; then
+                  echo "Rolling back to previous deployment..."
+                  docker compose -f docker-compose.rollback.yml up -d --no-deps
+                  
+                  # Wait and check if rollback was successful
+                  sleep 30
+                  if curl -f -s --max-time 10 "'"$HEALTH_CHECK_URL"'" > /dev/null; then
+                    echo "Rollback successful!"
+                    exit 0
+                  else
+                    echo "Rollback also failed!"
+                    exit 1
+                  fi
+                else
+                  echo "No rollback file found, deployment failed"
+                  exit 1
+                fi
               fi
-
+              
               echo "Deployment successful!"
+              echo "Saving successful deployment SHA: ${{ env.GIT_SHA }}"
+              echo "${{ env.GIT_SHA }}" > .last-successful-deploy
             '
       

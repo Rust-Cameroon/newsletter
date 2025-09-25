@@ -7,10 +7,10 @@
 set -e
 
 # Configuration
-APP_DIR="/home/ubuntu/app"
+APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
 REGISTRY="ghcr.io"
 REPO_NAME="Rust-Cameroon/Newsletter"  # Update this with your actual repository name
-HEALTH_CHECK_URL="https://rustcameroon.com/api"
+HEALTH_CHECK_URL="${HEALTH_CHECK_URL:-https://rustcameroon.com/api}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -79,17 +79,17 @@ services:
 
   backend:
     image: $REGISTRY/$REPO_NAME/backend:$ROLLBACK_SHA
-    ports:
-      - "8000:8000"
+    # SECURITY: Backend port is not exposed externally - only accessible via frontend
     volumes:
       - ./backend/posts.json:/app/posts.json:rw
     environment:
       - RUST_LOG=info
       - PORT=8000
+      - DATABASE_URL=${DATABASE_URL:-postgres://user:password@localhost:5432/rustcameroon}
       - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin123
-      - MINIO_BUCKET=rust-cameroon-images
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin123}
+      - MINIO_BUCKET=${MINIO_BUCKET:-rust-cameroon-images}
     depends_on:
       - minio
     restart: unless-stopped
@@ -102,8 +102,8 @@ services:
     volumes:
       - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin123
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-minioadmin123}
     command: server /data --console-address ":9001"
     restart: unless-stopped
     healthcheck:

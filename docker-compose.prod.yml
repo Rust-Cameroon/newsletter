@@ -1,6 +1,9 @@
 # Production Docker Compose file
 # This file is used for production deployments with GHCR images
 # The workflow will dynamically update the image tags with latest and SHA versions
+# 
+# SECURITY NOTE: This file contains placeholder values. In production, use environment
+# variables or secrets for sensitive data like MINIO_ACCESS_KEY, MINIO_SECRET_KEY, etc.
 
 services:
   frontend:
@@ -26,17 +29,18 @@ services:
 
   backend:
     image: ghcr.io/your-username/your-repo/backend:latest
-    ports:
-      - "8000:8000"
+    # SECURITY: Backend port is not exposed externally - only accessible via frontend
+    # Remove the ports section to prevent direct access to backend
     volumes:
       - ./backend/posts.json:/app/posts.json:rw
     environment:
       - RUST_LOG=info
       - PORT=8000
+      - DATABASE_URL=${DATABASE_URL:-postgres://user:password@localhost:5432/rustcameroon}
       - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin123
-      - MINIO_BUCKET=rust-cameroon-images
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin123}
+      - MINIO_BUCKET=${MINIO_BUCKET:-rust-cameroon-images}
     depends_on:
       - minio
     restart: unless-stopped
@@ -49,8 +53,8 @@ services:
     volumes:
       - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin123
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-minioadmin123}
     command: server /data --console-address ":9001"
     restart: unless-stopped
     healthcheck:
