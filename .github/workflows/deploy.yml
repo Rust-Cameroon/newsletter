@@ -1,14 +1,12 @@
-name: Deploy to AWS EC2
+﻿name: Deploy
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch: # Allow manual triggering
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
-  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
 
 jobs:
   build-and-push:
@@ -16,321 +14,120 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     outputs:
       git-sha: ${{ steps.vars.outputs.GIT_SHA }}
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-      
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
-        tags: |
-          type=ref,event=branch
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
-          
-    - name: Set variables
-      id: vars
-      run: |
-        GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "GIT_SHA=$GIT_SHA" >> $GITHUB_OUTPUT
-        echo "GIT_SHA=$GIT_SHA" >> $GITHUB_ENV
-        
-    - name: Build and push Frontend image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./frontend
-        file: ./frontend/Dockerfile
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ steps.vars.outputs.GIT_SHA }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        
-    - name: Build and push Backend image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./backend
-        file: ./backend/Dockerfile
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ steps.vars.outputs.GIT_SHA }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/frontend
+            ${{ env.REGISTRY }}/${{ github.repository }}/backend
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Compute variables (lowercase repo + short SHA)
+        id: vars
+        run: |
+          GIT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          REPO_LOWER=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+          echo "GIT_SHA=$GIT_SHA" >> $GITHUB_OUTPUT
+          echo "GIT_SHA=$GIT_SHA" >> $GITHUB_ENV
+          echo "REPO_LOWER=$REPO_LOWER" >> $GITHUB_ENV
+          echo "IMAGE_NAME_FRONTEND=$REPO_LOWER/frontend" >> $GITHUB_ENV
+          echo "IMAGE_NAME_BACKEND=$REPO_LOWER/backend" >> $GITHUB_ENV
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.GIT_SHA }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.GIT_SHA }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set variables
-      run: |
-        GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-        echo "GIT_SHA=$GIT_SHA" >> $GITHUB_ENV
-        
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-        
-    - name: Get last successful deployment
-      run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-          if [ -f /home/ubuntu/app/.last-successful-deploy ]; then
-            cat /home/ubuntu/app/.last-successful-deploy
-          else
-            echo 'none'
-          fi
-        " > last_deploy.txt
-        LAST_DEPLOY=$(cat last_deploy.txt)
-        echo "LAST_DEPLOY=$LAST_DEPLOY" >> $GITHUB_ENV
-        echo "Last successful deployment: $LAST_DEPLOY"
-        
-    - name: Create production compose file
-      run: |
-        # Create docker-compose.prod.yml with GHCR images
-        cat > docker-compose.prod.yml << EOF
-        services:
-          frontend:
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
-            ports:
-              - "80:80"
-              - "443:443"
-            volumes:
-              - /root/certs/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
-            environment:
-              - BACKEND_URL=http://backend:8000
-              - VITE_API_URL=https://rustcameroon.com/api
-              - NGINX_CONFIG=https
-            user: "0:0"
-            depends_on:
-              - backend
-              - minio
-            restart: unless-stopped
-            ulimits:
-              nofile:
-                soft: 65536
-                hard: 65536
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-          backend:
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:latest
-            ports:
-              - "8000:8000"
-            volumes:
-              - ./backend/posts.json:/app/posts.json:rw
-            environment:
-              - RUST_LOG=info
-              - PORT=8000
-              - MINIO_ENDPOINT=http://minio:9000
-              - MINIO_ACCESS_KEY=minioadmin
-              - MINIO_SECRET_KEY=minioadmin123
-              - MINIO_BUCKET=rust-cameroon-images
-            depends_on:
-              - minio
-            restart: unless-stopped
+      - name: Set lowercase variables again
+        run: |
+          REPO_LOWER=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+          echo "REPO_LOWER=$REPO_LOWER" >> $GITHUB_ENV
+          echo "IMAGE_NAME_FRONTEND=$REPO_LOWER/frontend" >> $GITHUB_ENV
+          echo "IMAGE_NAME_BACKEND=$REPO_LOWER/backend" >> $GITHUB_ENV
+          echo "GIT_SHA=${{ needs.build-and-push.outputs.git-sha }}" >> $GITHUB_ENV
 
-          minio:
-            image: minio/minio:latest
-            ports:
-              - "9000:9000"
-              - "9001:9001"
-            volumes:
-              - minio_data:/data
-            environment:
-              - MINIO_ROOT_USER=minioadmin
-              - MINIO_ROOT_PASSWORD=minioadmin123
-            command: server /data --console-address ":9001"
-            restart: unless-stopped
-            healthcheck:
-              test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-              interval: 30s
-              timeout: 20s
-              retries: 3
+      - name: Generate docker-compose.prod.yml
+        run: |
+          cat > docker-compose.prod.yml <<'EOF'
+          version: "3.9"
+          services:
+            frontend:
+              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.GIT_SHA }}
+              restart: unless-stopped
+              ports:
+                - "80:80"
+                - "443:443"
+              environment:
+                - BACKEND_URL=https://rustcameroon.com
+                - VITE_API_URL=https://rustcameroon.com/api
+              volumes:
+                - /root/certs/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
 
-        volumes:
-          minio_data:
-        EOF
-        
-    - name: Deploy to EC2
-      run: |
-        # Copy compose file to EC2
-        scp -i ~/.ssh/id_rsa docker-compose.prod.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/app/
-        
-        # Deploy on EC2
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-          cd /home/ubuntu/app
-          
-          # Pull latest images
-          echo 'Pulling latest images...'
-          docker compose -f docker-compose.prod.yml pull
-          
-          # Stop and remove old containers
-          echo 'Stopping old containers...'
-          docker compose -f docker-compose.prod.yml down
-          
-          # Start new containers
-          echo 'Starting new containers...'
-          docker compose -f docker-compose.prod.yml up -d --no-deps
-          
-          # Wait for services to start
-          echo 'Waiting for services to start...'
-          sleep 30
-        "
-        
-    - name: Health Check
-      run: |
-        echo "Performing health check..."
-        HEALTH_CHECK_URL="${{ secrets.HEALTH_CHECK_URL || 'https://rustcameroon.com/api' }}"
-        
-        # Wait for health check with retries
-        for i in {1..10}; do
-          echo "Health check attempt $i/10..."
-          if curl -f -s --max-time 10 "$HEALTH_CHECK_URL" > /dev/null; then
-            echo "Health check passed!"
-            break
-          else
-            echo "Health check failed, retrying in 10 seconds..."
-            sleep 10
-          fi
-          
-          if [ $i -eq 10 ]; then
-            echo "Health check failed after 10 attempts. Starting rollback..."
-            exit 1
-          fi
-        done
-        
-    - name: Rollback on failure
-      if: failure()
-      run: |
-        echo "Deployment failed. Starting rollback to $LAST_DEPLOY..."
-        
-        if [ "$LAST_DEPLOY" = "none" ]; then
-          echo "No previous deployment found. Cannot rollback."
-          exit 1
-        fi
-        
-        # Create rollback compose file
-        cat > docker-compose.rollback.yml << EOF
-        services:
-          frontend:
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:$LAST_DEPLOY
-            ports:
-              - "80:80"
-              - "443:443"
-            volumes:
-              - /root/certs/rustcameroon.com-0001:/etc/letsencrypt/live/rustcameroon.com-0001:ro
-            environment:
-              - BACKEND_URL=http://backend:8000
-              - VITE_API_URL=https://rustcameroon.com/api
-              - NGINX_CONFIG=https
-            user: "0:0"
-            depends_on:
-              - backend
-              - minio
-            restart: unless-stopped
-            ulimits:
-              nofile:
-                soft: 65536
-                hard: 65536
+            backend:
+              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.GIT_SHA }}
+              restart: unless-stopped
+              environment:
+                - DATABASE_URL=postgres://...
+                - MINIO_ENDPOINT=minio:9000
+          EOF
 
-          backend:
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:$LAST_DEPLOY
-            ports:
-              - "8000:8000"
-            volumes:
-              - ./backend/posts.json:/app/posts.json:rw
-            environment:
-              - RUST_LOG=info
-              - PORT=8000
-              - MINIO_ENDPOINT=http://minio:9000
-              - MINIO_ACCESS_KEY=minioadmin
-              - MINIO_SECRET_KEY=minioadmin123
-              - MINIO_BUCKET=rust-cameroon-images
-            depends_on:
-              - minio
-            restart: unless-stopped
-
-          minio:
-            image: minio/minio:latest
-            ports:
-              - "9000:9000"
-              - "9001:9001"
-            volumes:
-              - minio_data:/data
-            environment:
-              - MINIO_ROOT_USER=minioadmin
-              - MINIO_ROOT_PASSWORD=minioadmin123
-            command: server /data --console-address ":9001"
-            restart: unless-stopped
-            healthcheck:
-              test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-              interval: 30s
-              timeout: 20s
-              retries: 3
-
-        volumes:
-          minio_data:
-        EOF
-        
-        # Deploy rollback
-        scp -i ~/.ssh/id_rsa docker-compose.rollback.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/app/
-        
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-          cd /home/ubuntu/app
-          
-          echo 'Rolling back to $LAST_DEPLOY...'
-          docker compose -f docker-compose.rollback.yml down
-          docker compose -f docker-compose.rollback.yml pull
-          docker compose -f docker-compose.rollback.yml up -d --no-deps
-          
-          # Replace current compose file with rollback version
-          mv docker-compose.rollback.yml docker-compose.prod.yml
-          
-          echo 'Rollback completed.'
-        "
-        
-        echo "Rollback completed. Workflow will exit with failure."
-        exit 1
-        
-    - name: Update successful deployment
-      if: success()
-      run: |
-        echo "Deployment successful. Updating last successful deployment record..."
-        ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-          echo '${{ env.GIT_SHA }}' > /home/ubuntu/app/.last-successful-deploy
-          echo 'Updated last successful deployment to: ${{ env.GIT_SHA }}'
-        "
-        
-    - name: Cleanup
-      if: always()
-      run: |
-        # Clean up SSH key
-        rm -f ~/.ssh/id_rsa
-        rm -f last_deploy.txt
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /srv/newsletter
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
