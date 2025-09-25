@@ -121,13 +121,37 @@ jobs:
                 - MINIO_ENDPOINT=minio:9000
           EOF
 
-      - name: Deploy to Server
+      - name: Deploy as root
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /srv/newsletter
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
+            # Switch to root and execute deployment commands
+            sudo bash -c '
+              cd Newsletter
+
+              echo "Pulling latest images..."
+              docker compose -f docker-compose.prod.yml pull
+
+              echo "Stopping old containers..."
+              docker compose -f docker-compose.prod.yml down
+
+              echo "Starting new containers..."
+              docker compose -f docker-compose.prod.yml up -d --no-deps
+
+              # Health check
+              echo "Waiting for services to start..."
+              sleep 30
+              if ! curl -f -s --max-time 10 http://localhost:8000 > /dev/null; then
+                echo "Health check failed! Rolling back..."
+                docker compose -f docker-compose.prod.yml down
+                docker compose -f docker-compose.rollback.yml pull
+                docker compose -f docker-compose.rollback.yml up -d --no-deps
+                exit 1
+              fi
+
+              echo "Deployment successful!"
+            '
+      
