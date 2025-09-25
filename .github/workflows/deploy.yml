@@ -172,29 +172,58 @@ jobs:
             # Set application directory
             APP_DIR="${EC2_APP_DIR:-Newsletter}"
             
-            echo "Validating deployment environment..."
+            echo "=== DEBUGGING INFORMATION ==="
+            echo "Current user: $(whoami)"
+            echo "Current directory: $(pwd)"
+            echo "Home directory: $HOME"
             echo "Application directory: $APP_DIR"
+            echo "Full path to app: $(pwd)/$APP_DIR"
+            echo "Root home contents:"
+            sudo ls -la /root/ || echo "Cannot access /root directory"
+            echo "=============================="
             
-            # Check if directory exists
-            if [ ! -d "$APP_DIR" ]; then
-              echo "Error: Application directory $APP_DIR does not exist"
-              exit 1
-            fi
+            echo "Validating deployment environment..."
             
-            # Check if Docker is running
-            if ! docker info > /dev/null 2>&1; then
-              echo "Error: Docker is not running"
-              exit 1
-            fi
-            
-            # Check disk space (at least 1GB free)
-            AVAILABLE=$(df "$APP_DIR" | tail -1 | awk '{print $4}')
-            if [ "$AVAILABLE" -lt 1000000 ]; then
-              echo "Error: Insufficient disk space. Available: ${AVAILABLE}KB"
-              exit 1
-            fi
-            
-            echo "Environment validation passed!"
+            # Run validation as root since the app directory is in /root
+            sudo bash -c '
+              echo "Running validation as root..."
+              echo "Root current directory: $(pwd)"
+              echo "Root home directory: $HOME"
+              echo "Looking for app directory: '"$APP_DIR"'"
+              echo "Full path: $(pwd)/'"$APP_DIR"'"
+              
+              # Check if directory exists
+              if [ ! -d "'"$APP_DIR"'" ]; then
+                echo "Error: Application directory '"$APP_DIR"' does not exist"
+                echo "Available directories in current location:"
+                ls -la
+                echo "Available directories in /root:"
+                ls -la /root/ || echo "Cannot list /root contents"
+                exit 1
+              fi
+              
+              echo "Application directory found: '"$APP_DIR"'"
+              echo "Directory contents:"
+              ls -la "'"$APP_DIR"'"
+              
+              # Check if Docker is running
+              if ! docker info > /dev/null 2>&1; then
+                echo "Error: Docker is not running"
+                exit 1
+              fi
+              
+              echo "Docker is running"
+              
+              # Check disk space (at least 1GB free)
+              AVAILABLE=$(df "'"$APP_DIR"'" | tail -1 | awk "{print \$4}")
+              if [ "$AVAILABLE" -lt 1000000 ]; then
+                echo "Error: Insufficient disk space. Available: ${AVAILABLE}KB"
+                exit 1
+              fi
+              
+              echo "Disk space check passed. Available: ${AVAILABLE}KB"
+              echo "Environment validation passed!"
+            '
 
       - name: Save current deployment state
         uses: appleboy/ssh-action@v0.1.10
@@ -229,9 +258,17 @@ jobs:
             HEALTH_CHECK_URL="${{ secrets.HEALTH_CHECK_URL || 'https://rustcameroon.com/api' }}"
             
             sudo bash -c '
+              echo "=== DEPLOYMENT DEBUGGING ==="
+              echo "Running as user: $(whoami)"
+              echo "Current directory: $(pwd)"
+              echo "Home directory: $HOME"
+              echo "Target app directory: '"$APP_DIR"'"
+              echo "Full path: $(pwd)/'"$APP_DIR"'"
+              echo "============================="
+              
               cd "'"$APP_DIR"'"
               
-              echo "Current directory: $(pwd)"
+              echo "Changed to app directory: $(pwd)"
               echo "Directory contents:"
               ls -la
               
