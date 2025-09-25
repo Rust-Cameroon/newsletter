@@ -43,6 +43,7 @@ jobs:
             type=ref,event=branch
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=main-{{sha}},enable={{is_default_branch}}
 
       - name: Compute variables (lowercase repo + short SHA)
         id: vars
@@ -98,11 +99,18 @@ jobs:
 
       - name: Generate docker-compose.prod.yml
         run: |
-          cat > docker-compose.prod.yml <<'EOF'
+          # Use latest tag for main branch, SHA tag for other branches
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            IMAGE_TAG="latest"
+          else
+            IMAGE_TAG="${{ env.GIT_SHA }}"
+          fi
+          
+          cat > docker-compose.prod.yml <<EOF
           version: "3.9"
           services:
             frontend:
-              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.GIT_SHA }}
+              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}:${IMAGE_TAG}
               restart: unless-stopped
               ports:
                 - "80:80"
@@ -124,7 +132,7 @@ jobs:
                   hard: 65536
 
             backend:
-              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.GIT_SHA }}
+              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}:${IMAGE_TAG}
               restart: unless-stopped
               environment:
                 - RUST_LOG=info
@@ -304,7 +312,7 @@ jobs:
               
               echo "Performing health check on: '"$HEALTH_CHECK_URL"'"
               if ! curl -f -s --max-time 10 "'"$HEALTH_CHECK_URL"'" > /dev/null; then
-                echo "Health check failed! Rolling back..."
+                echo "Health check failed! Attempting rollback..."
                 docker compose -f docker-compose.prod.yml down
                 
                 if [ -f "docker-compose.rollback.yml" ]; then
@@ -321,8 +329,20 @@ jobs:
                     exit 1
                   fi
                 else
-                  echo "No rollback file found, deployment failed"
-                  exit 1
+                  echo "No rollback file found. Trying to restart with latest images..."
+                  # Try to restart with the same compose file but force pull latest
+                  docker compose -f docker-compose.prod.yml pull
+                  docker compose -f docker-compose.prod.yml up -d --no-deps
+                  
+                  # Wait and check again
+                  sleep 30
+                  if curl -f -s --max-time 10 "'"$HEALTH_CHECK_URL"'" > /dev/null; then
+                    echo "Restart with latest images successful!"
+                    exit 0
+                  else
+                    echo "All recovery attempts failed!"
+                    exit 1
+                  fi
                 fi
               fi
               
