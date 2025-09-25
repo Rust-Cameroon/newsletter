@@ -170,7 +170,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Set application directory
-            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
+            APP_DIR="${EC2_APP_DIR:-Newsletter}"
             
             echo "Validating deployment environment..."
             echo "Application directory: $APP_DIR"
@@ -203,7 +203,7 @@ jobs:
           username: ${{ secrets.EC2_USER || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
+            APP_DIR="${EC2_APP_DIR:-Newsletter}"
             
             sudo bash -c '
               cd "'"$APP_DIR"'"
@@ -225,7 +225,7 @@ jobs:
           username: ${{ secrets.EC2_USER || 'ubuntu' }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
+            APP_DIR="${EC2_APP_DIR:-Newsletter}"
             HEALTH_CHECK_URL="${{ secrets.HEALTH_CHECK_URL || 'https://rustcameroon.com/api' }}"
             
             sudo bash -c '

@@ -7,7 +7,7 @@
 set -e
 
 # Configuration
-APP_DIR="${EC2_APP_DIR:-/root/Newsletter}"
+APP_DIR="${EC2_APP_DIR:-Newsletter}"
 REGISTRY="ghcr.io"
 REPO_NAME="Rust-Cameroon/Newsletter"  # Update this with your actual repository name
 HEALTH_CHECK_URL="${HEALTH_CHECK_URL:-https://rustcameroon.com/api}"
