@@ -7,7 +7,7 @@
 
 services:
   frontend:
-    image: ghcr.io/your-username/your-repo/frontend:latest
+    image: ghcr.io/rust-cameroon/newsletter/frontend:88d8b9d
     ports:
       - "80:80"
       - "443:443"
@@ -28,7 +28,7 @@ services:
         hard: 65536
 
   backend:
-    image: ghcr.io/your-username/your-repo/backend:latest
+    image: ghcr.io/rust-cameroon/newsletter/frontend:88d8b9d
     # SECURITY: Backend port is not exposed externally - only accessible via frontend
     # Remove the ports section to prevent direct access to backend
     volumes:
