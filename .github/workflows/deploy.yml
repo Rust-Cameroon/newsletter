@@ -245,6 +245,11 @@ jobs:
               cd "'"$APP_DIR"'"
               echo "Changed to app directory: $(pwd)"
               
+              # Pull latest changes from git
+              echo "Pulling latest changes from git..."
+              git pull origin main
+              echo "Git pull completed"
+              
               # Save current deployment state for rollback
               if [ -f "docker-compose.prod.yml" ]; then
                 echo "Saving current deployment state..."
