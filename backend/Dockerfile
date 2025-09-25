@@ -8,7 +8,6 @@ WORKDIR /app
 
 # Cache dependencies first (improves rebuild time)
 COPY Cargo.toml Cargo.lock ./
-RUN cargo fetch
 
 # Copy source code and build
 COPY src ./src
