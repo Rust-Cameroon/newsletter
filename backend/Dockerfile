@@ -1,18 +1,17 @@
 # Build stage
-FROM rust:1.80-alpine as builder
+FROM rust:1.82-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache musl-dev
+RUN apk add --no-cache musl-dev pkgconfig
 
 WORKDIR /app
 
-# Copy Cargo files
+# Cache dependencies first (improves rebuild time)
 COPY Cargo.toml Cargo.lock ./
+RUN cargo fetch
 
-# Copy source code
+# Copy source code and build
 COPY src ./src
-
-# Build the application
 RUN cargo build --release
 
 # Production stage
@@ -31,10 +30,8 @@ COPY posts.json /app/posts.json
 
 # Create non-root user
 RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
-# Change ownership
-RUN chown -R appuser:appgroup /app
+    adduser -S appuser -u 1001 -G appgroup && \
+    chown -R appuser:appgroup /app
 
 # Switch to non-root user
 USER appuser
