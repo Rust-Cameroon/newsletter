@@ -189,16 +189,18 @@ jobs:
               echo "Running validation as root..."
               echo "Root current directory: $(pwd)"
               echo "Root home directory: $HOME"
+              
+              # Navigate to root home directory first
+              cd /root
+              echo "Changed to /root directory: $(pwd)"
               echo "Looking for app directory: '"$APP_DIR"'"
               echo "Full path: $(pwd)/'"$APP_DIR"'"
               
               # Check if directory exists
               if [ ! -d "'"$APP_DIR"'" ]; then
-                echo "Error: Application directory '"$APP_DIR"' does not exist"
-                echo "Available directories in current location:"
-                ls -la
+                echo "Error: Application directory '"$APP_DIR"' does not exist in /root"
                 echo "Available directories in /root:"
-                ls -la /root/ || echo "Cannot list /root contents"
+                ls -la
                 exit 1
               fi
               
@@ -235,7 +237,13 @@ jobs:
             APP_DIR="${EC2_APP_DIR:-Newsletter}"
             
             sudo bash -c '
+              # Navigate to root home directory first
+              cd /root
+              echo "Changed to /root directory: $(pwd)"
+              echo "Now navigating to app directory: '"$APP_DIR"'"
+              
               cd "'"$APP_DIR"'"
+              echo "Changed to app directory: $(pwd)"
               
               # Save current deployment state for rollback
               if [ -f "docker-compose.prod.yml" ]; then
@@ -263,8 +271,12 @@ jobs:
               echo "Current directory: $(pwd)"
               echo "Home directory: $HOME"
               echo "Target app directory: '"$APP_DIR"'"
-              echo "Full path: $(pwd)/'"$APP_DIR"'"
               echo "============================="
+              
+              # Navigate to root home directory first
+              cd /root
+              echo "Changed to /root directory: $(pwd)"
+              echo "Now navigating to app directory: '"$APP_DIR"'"
               
               cd "'"$APP_DIR"'"
               
