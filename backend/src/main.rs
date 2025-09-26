@@ -141,19 +141,19 @@ impl MinioService {
             secret_key,
             None,
             None,
-            "minio",
+            "static",
         );
 
         let region = aws_sdk_s3::config::Region::new("us-east-1");
         
-        let config = aws_sdk_s3::Config::builder()
+        let s3_config = aws_sdk_s3::config::Builder::new()
             .region(region)
             .endpoint_url(endpoint)
             .credentials_provider(credentials)
             .force_path_style(false) // Important for MinIO
             .build();
 
-        let client = S3Client::from_conf(config);
+        let client = S3Client::from_conf(s3_config);
 
         let service = MinioService { 
             client, 
