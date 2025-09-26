@@ -61,6 +61,20 @@
     "recentPosts": {
       "title": "Articles récents",
       "viewAll": "Voir tous les articles"
+    },
+    "features": {
+      "learn": {
+        "title": "Apprendre",
+        "description": "Accédez aux ressources, tutoriels et ateliers pour maîtriser la programmation Rust."
+      },
+      "connect": {
+        "title": "Se connecter",
+        "description": "Rencontrez d'autres Rustacéens, partagez vos connaissances et collaborez sur des projets."
+      },
+      "build": {
+        "title": "Construire",
+        "description": "Créez des projets incroyables et contribuez à l'écosystème Rust."
+      }
     }
   },
   "about": {
@@ -102,14 +116,32 @@
     "join": {
       "title": "Rejoignez-nous",
       "content": "Prêt à faire partie de quelque chose d'extraordinaire ? Rejoignez notre communauté dès aujourd'hui et commencez votre parcours Rust avec nous. Que vous soyez un débutant complet ou un développeur expérimenté, il y a une place pour vous dans Rust Cameroun."
+    },
+    "whyRust": {
+      "title": "Pourquoi Rust ?",
+      "features": [
+        "Sécurité mémoire sans ramasse-miettes",
+        "Abstractions à coût zéro",
+        "Concurrence sans crainte",
+        "Outillage et écosystème excellents"
+      ]
+    },
+    "joinCommunity": {
+      "title": "Rejoignez notre communauté",
+      "content": "Que vous soyez un Rustacéen expérimenté ou que vous commenciez votre parcours avec Rust, vous êtes le bienvenu dans notre communauté. Nous croyons en l'apprentissage ensemble, au partage de connaissances et au soutien mutuel dans notre parcours Rust.",
+      "github": "GitHub",
+      "discord": "Discord"
     }
   },
   "events": {
     "title": "Événements",
-    "subtitle": "Rejoignez nos prochains événements et connectez-vous avec la communauté Rust au Cameroun",
+    "subtitle": "Rejoignez nos événements communautaires, ateliers et rencontres pour apprendre Rust et vous connecter avec d'autres développeurs.",
     "upcoming": "Événements à venir",
     "past": "Événements passés",
     "noEvents": "Aucun événement programmé pour le moment. Revenez bientôt !",
+    "noUpcomingEvents": "Aucun événement à venir",
+    "noUpcomingEventsDescription": "Revenez bientôt pour de nouveaux événements et ateliers !",
+    "noPastEvents": "Aucun événement passé à afficher.",
     "register": "S'inscrire",
     "details": "Détails de l'événement",
     "date": "Date",
@@ -117,19 +149,29 @@
     "location": "Lieu",
     "description": "Description",
     "speakers": "Intervenants",
-    "agenda": "Programme"
+    "agenda": "Programme",
+    "organizeEvent": {
+      "title": "Vous voulez organiser un événement ?",
+      "description": "Vous avez une idée d'atelier ou de rencontre ? Nous aimerions vous entendre !",
+      "contactUs": "Contactez-nous"
+    }
   },
   "blog": {
     "title": "Blog",
-    "subtitle": "Derniers aperçus, tutoriels et actualités de la communauté Rust",
+    "subtitle": "Restez à jour avec les derniers articles, tutoriels et aperçus de notre communauté Rust.",
     "recentPosts": "Articles récents",
     "allPosts": "Tous les articles",
     "noPosts": "Aucun article disponible pour le moment.",
+    "noPostsYet": "Aucun article pour le moment",
+    "noPostsYetDescription": "Revenez bientôt pour de nouveaux articles et tutoriels !",
     "readMore": "Lire la suite",
     "publishedOn": "Publié le",
     "by": "par",
     "tags": "Étiquettes",
-    "relatedPosts": "Articles connexes"
+    "relatedPosts": "Articles connexes",
+    "popularTags": "Étiquettes populaires",
+    "errorLoadingPosts": "Erreur lors du chargement des articles",
+    "loadingPosts": "Chargement des articles..."
   },
   "post": {
     "backToBlog": "Retour au blog",
@@ -156,6 +198,12 @@
       "deletePost": "Supprimer l'article",
       "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet article ?",
       "noPosts": "Aucun article trouvé.",
+      "newPost": "Nouvel article",
+      "logout": "Déconnexion",
+      "loadingPosts": "Chargement des articles...",
+      "postImage": "Image de l'article (optionnel)",
+      "selected": "Sélectionné",
+      "contentHtml": "Contenu (HTML)",
       "postForm": {
         "title": "Titre",
         "content": "Contenu",
@@ -164,7 +212,9 @@
         "tags": "Étiquettes (séparées par des virgules)",
         "imageUrl": "URL de l'image",
         "save": "Enregistrer l'article",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "createPost": "Créer l'article",
+        "updatePost": "Mettre à jour l'article"
       }
     }
   },

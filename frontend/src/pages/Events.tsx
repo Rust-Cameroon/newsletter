@@ -1,7 +1,9 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 const Events: React.FC = () => {
+  const { t } = useTranslation();
   // Mock events data - in a real app, this would come from an API
   const events = [
     {
@@ -90,17 +92,17 @@ const Events: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            Events
+            {t('events.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Join our community events, workshops, and meetups to learn Rust and connect with fellow developers.
+            {t('events.subtitle')}
           </p>
         </div>
 
         {/* Upcoming Events */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            Upcoming Events
+            {t('events.upcoming')}
           </h2>
           
           {upcomingEvents.length > 0 ? (
@@ -142,7 +144,7 @@ const Events: React.FC = () => {
                     </div>
                     
                     <button className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                      Register
+                      {t('events.register')}
                     </button>
                   </div>
                 </div>
@@ -154,10 +156,10 @@ const Events: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                No upcoming events
+                {t('events.noUpcomingEvents')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Check back soon for new events and workshops!
+                {t('events.noUpcomingEventsDescription')}
               </p>
             </div>
           )}
@@ -166,7 +168,7 @@ const Events: React.FC = () => {
         {/* Past Events */}
         <section>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            Past Events
+            {t('events.past')}
           </h2>
           
           {pastEvents.length > 0 ? (
@@ -213,7 +215,7 @@ const Events: React.FC = () => {
           ) : (
             <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
               <p className="text-gray-600 dark:text-gray-400">
-                No past events to display.
+                {t('events.noPastEvents')}
               </p>
             </div>
           )}
@@ -223,13 +225,13 @@ const Events: React.FC = () => {
         <section className="mt-16 text-center">
           <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-lg p-8 text-white">
             <h2 className="text-2xl font-bold mb-4">
-              Want to Organize an Event?
+              {t('events.organizeEvent.title')}
             </h2>
             <p className="text-lg mb-6 opacity-90">
-              Have an idea for a workshop or meetup? We'd love to hear from you!
+              {t('events.organizeEvent.description')}
             </p>
             <button className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Contact Us
+              {t('events.organizeEvent.contactUs')}
             </button>
           </div>
         </section>

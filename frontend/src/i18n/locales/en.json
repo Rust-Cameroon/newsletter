@@ -61,6 +61,20 @@
     "recentPosts": {
       "title": "Recent Posts",
       "viewAll": "View All Posts"
+    },
+    "features": {
+      "learn": {
+        "title": "Learn",
+        "description": "Access resources, tutorials, and workshops to master Rust programming."
+      },
+      "connect": {
+        "title": "Connect",
+        "description": "Meet fellow Rustaceans, share knowledge, and collaborate on projects."
+      },
+      "build": {
+        "title": "Build",
+        "description": "Create amazing projects and contribute to the Rust ecosystem."
+      }
     }
   },
   "about": {
@@ -102,14 +116,32 @@
     "join": {
       "title": "Join Us",
       "content": "Ready to be part of something amazing? Join our community today and start your Rust journey with us. Whether you're a complete beginner or an experienced developer, there's a place for you in Rust Cameroon."
+    },
+    "whyRust": {
+      "title": "Why Rust?",
+      "features": [
+        "Memory safety without garbage collection",
+        "Zero-cost abstractions",
+        "Fearless concurrency",
+        "Excellent tooling and ecosystem"
+      ]
+    },
+    "joinCommunity": {
+      "title": "Join Our Community",
+      "content": "Whether you're a seasoned Rustacean or just starting your journey with Rust, you're welcome in our community. We believe in learning together, sharing knowledge, and supporting each other in our Rust journey.",
+      "github": "GitHub",
+      "discord": "Discord"
     }
   },
   "events": {
     "title": "Events",
-    "subtitle": "Join our upcoming events and connect with the Rust community in Cameroon",
+    "subtitle": "Join our community events, workshops, and meetups to learn Rust and connect with fellow developers.",
     "upcoming": "Upcoming Events",
     "past": "Past Events",
     "noEvents": "No events scheduled at the moment. Check back soon!",
+    "noUpcomingEvents": "No upcoming events",
+    "noUpcomingEventsDescription": "Check back soon for new events and workshops!",
+    "noPastEvents": "No past events to display.",
     "register": "Register",
     "details": "Event Details",
     "date": "Date",
@@ -117,19 +149,29 @@
     "location": "Location",
     "description": "Description",
     "speakers": "Speakers",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "organizeEvent": {
+      "title": "Want to Organize an Event?",
+      "description": "Have an idea for a workshop or meetup? We'd love to hear from you!",
+      "contactUs": "Contact Us"
+    }
   },
   "blog": {
     "title": "Blog",
-    "subtitle": "Latest insights, tutorials, and news from the Rust community",
+    "subtitle": "Stay updated with the latest articles, tutorials, and insights from our Rust community.",
     "recentPosts": "Recent Posts",
     "allPosts": "All Posts",
     "noPosts": "No posts available at the moment.",
+    "noPostsYet": "No posts yet",
+    "noPostsYetDescription": "Check back soon for new articles and tutorials!",
     "readMore": "Read More",
     "publishedOn": "Published on",
     "by": "by",
     "tags": "Tags",
-    "relatedPosts": "Related Posts"
+    "relatedPosts": "Related Posts",
+    "popularTags": "Popular Tags",
+    "errorLoadingPosts": "Error Loading Posts",
+    "loadingPosts": "Loading posts..."
   },
   "post": {
     "backToBlog": "Back to Blog",
@@ -156,6 +198,12 @@
       "deletePost": "Delete Post",
       "confirmDelete": "Are you sure you want to delete this post?",
       "noPosts": "No posts found.",
+      "newPost": "New Post",
+      "logout": "Logout",
+      "loadingPosts": "Loading posts...",
+      "postImage": "Post Image (optional)",
+      "selected": "Selected",
+      "contentHtml": "Content (HTML)",
       "postForm": {
         "title": "Title",
         "content": "Content",
@@ -164,7 +212,9 @@
         "tags": "Tags (comma-separated)",
         "imageUrl": "Image URL",
         "save": "Save Post",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "createPost": "Create Post",
+        "updatePost": "Update Post"
       }
     }
   },

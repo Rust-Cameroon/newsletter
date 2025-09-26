@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { postsApi } from '../utils/api';
 import { Post } from '../types';
 
 const Admin: React.FC = () => {
+  const { t } = useTranslation();
   const { state, dispatch } = useApp();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -147,12 +149,12 @@ const Admin: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
           <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              Admin Login
+              {t('admin.login.title')}
             </h1>
             <form onSubmit={handleLogin}>
               <div className="mb-6">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Password
+                  {t('admin.login.password')}
                 </label>
                 <input
                   type="password"
@@ -167,7 +169,7 @@ const Admin: React.FC = () => {
                 type="submit"
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
               >
-                Login
+                {t('admin.login.login')}
               </button>
             </form>
           </div>
@@ -185,20 +187,20 @@ const Admin: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Admin Panel
+            {t('admin.title')}
           </h1>
           <div className="flex space-x-4">
             <button
               onClick={() => setShowCreateForm(true)}
               className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              New Post
+              {t('admin.dashboard.newPost')}
             </button>
             <button
               onClick={handleLogout}
               className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
             >
-              Logout
+              {t('admin.dashboard.logout')}
             </button>
           </div>
         </div>
@@ -208,14 +210,14 @@ const Admin: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                {editingPost ? 'Edit Post' : 'Create New Post'}
+                {editingPost ? t('admin.dashboard.editPost') : t('admin.dashboard.createPost')}
               </h2>
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Title
+                      {t('admin.dashboard.postForm.title')}
                     </label>
                     <input
                       type="text"
@@ -229,7 +231,7 @@ const Admin: React.FC = () => {
                   
                   <div>
                     <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Excerpt
+                      {t('admin.dashboard.postForm.excerpt')}
                     </label>
                     <textarea
                       id="excerpt"
@@ -243,7 +245,7 @@ const Admin: React.FC = () => {
                   
                   <div>
                     <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Content (HTML)
+                      {t('admin.dashboard.contentHtml')}
                     </label>
                     <textarea
                       id="content"
@@ -257,7 +259,7 @@ const Admin: React.FC = () => {
                   
                   <div>
                     <label htmlFor="author" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Author
+                      {t('admin.dashboard.postForm.author')}
                     </label>
                     <input
                       type="text"
@@ -271,7 +273,7 @@ const Admin: React.FC = () => {
                   
                   <div>
                     <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Tags (comma-separated)
+                      {t('admin.dashboard.postForm.tags')}
                     </label>
                     <input
                       type="text"
@@ -285,7 +287,7 @@ const Admin: React.FC = () => {
                   
                   <div>
                     <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Post Image (optional)
+                      {t('admin.dashboard.postImage')}
                     </label>
                     <input
                       type="file"
@@ -296,7 +298,7 @@ const Admin: React.FC = () => {
                     />
                     {selectedFile && (
                       <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Selected: {selectedFile.name}
+                        {t('admin.dashboard.selected')}: {selectedFile.name}
                       </p>
                     )}
                   </div>
@@ -320,13 +322,13 @@ const Admin: React.FC = () => {
                     }}
                     className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                   >
-                    Cancel
+                    {t('admin.dashboard.postForm.cancel')}
                   </button>
                   <button
                     type="submit"
                     className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                   >
-                    {editingPost ? 'Update Post' : 'Create Post'}
+                    {editingPost ? t('admin.dashboard.postForm.updatePost') : t('admin.dashboard.postForm.createPost')}
                   </button>
                 </div>
               </form>
@@ -338,14 +340,14 @@ const Admin: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Posts ({state.posts.length})
+              {t('admin.dashboard.posts')} ({state.posts.length})
             </h2>
           </div>
           
           {state.loading ? (
             <div className="p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading posts...</p>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">{t('admin.dashboard.loadingPosts')}</p>
             </div>
           ) : state.posts.length > 0 ? (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -370,13 +372,13 @@ const Admin: React.FC = () => {
                         onClick={() => handleEdit(post)}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
                       >
-                        Edit
+                        {t('common.edit')}
                       </button>
                       <button
                         onClick={() => handleDelete(post.id)}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
                       >
-                        Delete
+                        {t('common.delete')}
                       </button>
                     </div>
                   </div>
@@ -385,7 +387,7 @@ const Admin: React.FC = () => {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-gray-600 dark:text-gray-400">No posts found.</p>
+              <p className="text-gray-600 dark:text-gray-400">{t('admin.dashboard.noPosts')}</p>
             </div>
           )}
         </div>
