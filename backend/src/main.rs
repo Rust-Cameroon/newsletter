@@ -135,7 +135,7 @@ impl MinioService {
         secret_key: &str,
         bucket_name: &str,
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-        // Configure AWS SDK specifically for MinIO
+        // Configure AWS SDK specifically for MinIO (version 0.31)
         let credentials = aws_sdk_s3::config::Credentials::new(
             access_key,
             secret_key,
@@ -150,7 +150,7 @@ impl MinioService {
             .region(region)
             .endpoint_url(endpoint)
             .credentials_provider(credentials)
-            .force_path_style(false) // Important for MinIO
+            .force_path_style(true) // MinIO typically requires path-style URLs
             .build();
 
         let client = S3Client::from_conf(s3_config);
@@ -171,17 +171,26 @@ impl MinioService {
             Ok(_) => {
                 info!("MinIO bucket exists: {}", self.bucket_name);
             }
-            Err(_) => {
+            Err(e) => {
+                // Log the specific error for debugging
+                error!("Head bucket failed: {:?}", e);
+                
                 // Bucket doesn't exist, create it
                 info!("MinIO bucket doesn't exist: {}. Creating it...", self.bucket_name);
                 
-                self.client
+                match self.client
                     .create_bucket()
                     .bucket(&self.bucket_name)
                     .send()
-                    .await?;
-                
-                info!("Successfully created MinIO bucket: {}", self.bucket_name);
+                    .await {
+                    Ok(_) => {
+                        info!("Successfully created MinIO bucket: {}", self.bucket_name);
+                    }
+                    Err(create_err) => {
+                        error!("Failed to create bucket: {:?}", create_err);
+                        return Err(create_err.into());
+                    }
+                }
             }
         }
 
@@ -471,8 +480,8 @@ async fn main() {
     let app = Router::new()
         .route("/", get(health_check))
         .route("/posts", get(get_posts).post(create_post))
-        .route("/posts/:slug", get(get_post))
-        .route("/posts/:id", put(update_post))
+        .route("/posts/slug/:slug", get(get_post))
+        .route("/posts/update/:id", put(update_post))
         .route("/posts/delete/:id", delete(delete_post))
         .nest_service("/static", ServeDir::new("static"))
         .layer(
