@@ -17,8 +17,32 @@ use tower_http::{
 use tracing::{info, error, instrument};
 use tracing_subscriber;
 use aws_sdk_s3::Client as S3Client;
-use aws_config::meta::region::RegionProviderChain;
 use bytes::Bytes;
+use envconfig::Envconfig;
+
+#[derive(Envconfig)]
+pub struct Config {
+    #[envconfig(from = "PORT", default = "8000")]
+    pub port: u16,
+
+    #[envconfig(from = "RUST_LOG", default = "info")]
+    pub rust_log: String,
+
+    #[envconfig(from = "DATABASE_URL", default = "postgres://user:password@localhost:5432/rustcameroon")]
+    pub database_url: String,
+
+    #[envconfig(from = "MINIO_ENDPOINT", default = "http://localhost:9000")]
+    pub minio_endpoint: String,
+
+    #[envconfig(from = "MINIO_ACCESS_KEY", default = "minioadmin")]
+    pub minio_access_key: String,
+
+    #[envconfig(from = "MINIO_SECRET_KEY", default = "minioadmin123")]
+    pub minio_secret_key: String,
+
+    #[envconfig(from = "MINIO_BUCKET", default = "rust-cameroon-images")]
+    pub minio_bucket: String,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Post {
@@ -71,15 +95,10 @@ struct MinioService {
 }
 
 impl MinioService {
-    async fn new() -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-        let endpoint = std::env::var("MINIO_ENDPOINT").unwrap_or_else(|_| "http://localhost:9000".to_string());
-        let access_key = std::env::var("MINIO_ACCESS_KEY").unwrap_or_else(|_| "minioadmin".to_string());
-        let secret_key = std::env::var("MINIO_SECRET_KEY").unwrap_or_else(|_| "minioadmin123".to_string());
-        let bucket = std::env::var("MINIO_BUCKET").unwrap_or_else(|_| "rust-cameroon-images".to_string());
-
-        info!("Initializing MinIO service with endpoint: {}", endpoint);
-        info!("MinIO access key: {}", access_key);
-        info!("MinIO bucket: {}", bucket);
+    async fn new(config: &Config) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+        info!("Initializing MinIO service with endpoint: {}", config.minio_endpoint);
+        info!("MinIO access key: {}", config.minio_access_key);
+        info!("MinIO bucket: {}", config.minio_bucket);
 
         // Retry logic for MinIO connection
         let mut retries = 0;
@@ -87,7 +106,12 @@ impl MinioService {
         let retry_delay = std::time::Duration::from_secs(2);
 
         loop {
-            match Self::try_connect(&endpoint, &access_key, &secret_key, &bucket).await {
+            match Self::try_connect(
+                &config.minio_endpoint,
+                &config.minio_access_key,
+                &config.minio_secret_key,
+                &config.minio_bucket,
+            ).await {
                 Ok(service) => {
                     info!("MinIO service initialized successfully");
                     return Ok(service);
@@ -111,22 +135,25 @@ impl MinioService {
         secret_key: &str,
         bucket_name: &str,
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-        // Configure AWS SDK for MinIO
-        let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
-        let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
-            .region(region_provider)
-            .endpoint_url(endpoint)
-            .credentials_provider(aws_sdk_s3::config::Credentials::new(
-                access_key,
-                secret_key,
-                None,
-                None,
-                "minio",
-            ))
-            .load()
-            .await;
+        // Configure AWS SDK specifically for MinIO
+        let credentials = aws_sdk_s3::config::Credentials::new(
+            access_key,
+            secret_key,
+            None,
+            None,
+            "minio",
+        );
 
-        let client = S3Client::new(&config);
+        let region = aws_sdk_s3::config::Region::new("us-east-1");
+        
+        let config = aws_sdk_s3::Config::builder()
+            .region(region)
+            .endpoint_url(endpoint)
+            .credentials_provider(credentials)
+            .force_path_style(false) // Important for MinIO
+            .build();
+
+        let client = S3Client::from_conf(config);
 
         let service = MinioService { 
             client, 
@@ -398,6 +425,19 @@ async fn health_check() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+    // Load configuration from environment variables
+    let config = match Config::init_from_env() {
+        Ok(config) => {
+            info!("Configuration loaded successfully");
+            config
+        }
+        Err(e) => {
+            error!("Failed to load configuration: {}", e);
+            std::process::exit(1);
+        }
+    };
+
+    // Initialize logging with configured level
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .init();
@@ -406,7 +446,7 @@ async fn main() {
     let posts_storage = PostsStorage::new(std::sync::Mutex::new(load_posts_from_file()));
 
     // Initialize MinIO service
-    let minio_service = match MinioService::new().await {
+    let minio_service = match MinioService::new(&config).await {
         Ok(service) => {
             info!("MinIO service initialized successfully");
             service
@@ -442,8 +482,7 @@ async fn main() {
         )
         .with_state(app_state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "8000".to_string());
-    let socket = format!("0.0.0.0:{}", port);
+    let socket = format!("0.0.0.0:{}", config.port);
     
     info!("Server starting on {}", socket);
     
