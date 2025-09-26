@@ -1,27 +1,36 @@
 # Build stage
 FROM rust:latest AS builder
 
-# Install build dependencies (Debian/Ubuntu)
-RUN apt-get update && apt-get install -y musl-dev pkg-config && rm -rf /var/lib/apt/lists/*
+# Install build dependencies for static linking
+RUN apt-get update && apt-get install -y musl-dev pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# Install musl target for static linking
+RUN rustup target add x86_64-unknown-linux-musl
 
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-RUN cargo build --release
 
-# Production stage
-FROM debian:bookworm-slim
+# Build with static linking to avoid GLIBC issues
+ENV RUSTFLAGS="-C target-feature=+crt-static"
+RUN cargo build --release --target x86_64-unknown-linux-musl
 
-RUN apt-get update && apt-get install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*
+# Production stage - use Alpine for better compatibility
+FROM alpine:latest
+
+# Install runtime dependencies
+RUN apk --no-cache add ca-certificates wget
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/rust-cameroon-api /app/rust-cameroon-api
+# Copy the statically linked binary
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/rust-cameroon-api /app/rust-cameroon-api
 COPY posts.json /app/posts.json
 
-RUN groupadd -g 1001 appgroup && \
-    useradd -u 1001 -g appgroup -M appuser && \
+# Create non-root user
+RUN addgroup -g 1001 appgroup && \
+    adduser -D -u 1001 -G appgroup appuser && \
     chown -R appuser:appgroup /app
 
 USER appuser

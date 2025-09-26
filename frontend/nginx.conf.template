@@ -30,7 +30,8 @@ http {
 
     # Server block for HTTPS
     server {
-        listen 443 ssl http2;
+        listen 443 ssl;
+        http2 on;
         server_name rustcameroon.com www.rustcameroon.com;
 
         ssl_certificate /etc/letsencrypt/live/rustcameroon.com-0001/fullchain.pem;
