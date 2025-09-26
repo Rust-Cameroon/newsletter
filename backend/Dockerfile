@@ -12,8 +12,8 @@ COPY src ./src
 # Build for the target platform (will use glibc)
 RUN cargo build --release
 
-# Production stage - use Debian for glibc compatibility
-FROM debian:bookworm-slim
+# Production stage - use Ubuntu for newer glibc compatibility
+FROM ubuntu:24.04
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*
