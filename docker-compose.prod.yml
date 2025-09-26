@@ -28,7 +28,7 @@ services:
         hard: 65536
 
   backend:
-    image: ghcr.io/rust-cameroon/newsletter/frontend:latest
+    image: ghcr.io/rust-cameroon/newsletter/backend:latest
     # SECURITY: Backend port is not exposed externally - only accessible via frontend
     # Remove the ports section to prevent direct access to backend
     volumes:
