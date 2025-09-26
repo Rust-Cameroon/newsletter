@@ -78,14 +78,48 @@ impl MinioService {
         let secret_key = std::env::var("MINIO_SECRET_KEY").unwrap_or_else(|_| "minioadmin123".to_string());
         let bucket = std::env::var("MINIO_BUCKET").unwrap_or_else(|_| "rust-cameroon-images".to_string());
 
+        info!("Initializing MinIO service with endpoint: {}", endpoint);
+        info!("MinIO access key: {}", access_key);
+        info!("MinIO bucket: {}", bucket);
+
+        // Retry logic for MinIO connection
+        let mut retries = 0;
+        let max_retries = 10;
+        let retry_delay = std::time::Duration::from_secs(2);
+
+        loop {
+            match Self::try_connect(&endpoint, &access_key, &secret_key, &bucket).await {
+                Ok(service) => {
+                    info!("MinIO service initialized successfully");
+                    return Ok(service);
+                }
+                Err(e) => {
+                    retries += 1;
+                    if retries >= max_retries {
+                        error!("Failed to initialize MinIO service after {} retries: {}", max_retries, e);
+                        return Err(e);
+                    }
+                    error!("MinIO connection attempt {} failed: {}. Retrying in {:?}...", retries, e, retry_delay);
+                    tokio::time::sleep(retry_delay).await;
+                }
+            }
+        }
+    }
+
+    async fn try_connect(
+        endpoint: &str,
+        access_key: &str,
+        secret_key: &str,
+        bucket: &str,
+    ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         // Configure AWS SDK for MinIO
         let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
         let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
             .region(region_provider)
-            .endpoint_url(&endpoint)
+            .endpoint_url(endpoint)
             .credentials_provider(aws_sdk_s3::config::Credentials::new(
-                &access_key,
-                &secret_key,
+                access_key,
+                secret_key,
                 None,
                 None,
                 "minio",
@@ -97,8 +131,8 @@ impl MinioService {
 
         let service = MinioService { 
             client, 
-            bucket: bucket.clone(),
-            endpoint: endpoint.clone(),
+            bucket: bucket.to_string(),
+            endpoint: endpoint.to_string(),
         };
         
         // Ensure bucket exists
