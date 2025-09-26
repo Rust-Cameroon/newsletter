@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, Multipart, State},
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post, delete, put},
+    routing::{get, delete, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -16,8 +16,9 @@ use tower_http::{
 };
 use tracing::{info, error, instrument};
 use tracing_subscriber;
-use aws_sdk_s3::Client as S3Client;
-use aws_config::meta::region::RegionProviderChain;
+use s3::{Bucket, Region};
+use s3::creds::Credentials;
+use s3::bucket_ops::BucketConfiguration;
 use bytes::Bytes;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -63,12 +64,11 @@ struct AppState {
     minio: MinioService,
 }
 
-// MinIO client wrapper using AWS SDK
+// MinIO client wrapper using rust-s3
 #[derive(Clone, Debug)]
 struct MinioService {
-    client: S3Client,
-    bucket: String,
-    endpoint: String,
+    bucket: Bucket,
+    bucket_name: String,
 }
 
 impl MinioService {
@@ -110,29 +110,23 @@ impl MinioService {
         endpoint: &str,
         access_key: &str,
         secret_key: &str,
-        bucket: &str,
+        bucket_name: &str,
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
-        // Configure AWS SDK for MinIO
-        let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
-        let config = aws_config::defaults(aws_config::BehaviorVersion::latest())
-            .region(region_provider)
-            .endpoint_url(endpoint)
-            .credentials_provider(aws_sdk_s3::config::Credentials::new(
-                access_key,
-                secret_key,
-                None,
-                None,
-                "minio",
-            ))
-            .load()
-            .await;
-
-        let client = S3Client::new(&config);
+        // Create credentials
+        let credentials = Credentials::new(Some(access_key), Some(secret_key), None, None, None)?;
+        
+        // Create region with custom endpoint for MinIO
+        let region = Region::Custom {
+            region: "us-east-1".to_owned(),
+            endpoint: endpoint.to_owned(),
+        };
+        
+        // Create bucket
+        let bucket = Bucket::new(bucket_name, region, credentials)?;
 
         let service = MinioService { 
-            client, 
-            bucket: bucket.to_string(),
-            endpoint: endpoint.to_string(),
+            bucket, 
+            bucket_name: bucket_name.to_string(),
         };
         
         // Ensure bucket exists
@@ -142,18 +136,30 @@ impl MinioService {
     }
 
     async fn ensure_bucket_exists(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        match self.client.head_bucket().bucket(&self.bucket).send().await {
+        // Try to list objects to check if bucket exists
+        match self.bucket.list("".to_string(), Some("/".to_string())).await {
             Ok(_) => {
-                info!("MinIO bucket exists: {}", self.bucket);
+                info!("MinIO bucket exists: {}", self.bucket_name);
             }
             Err(_) => {
                 // Bucket doesn't exist, create it
-                self.client
-                    .create_bucket()
-                    .bucket(&self.bucket)
-                    .send()
-                    .await?;
-                info!("Created MinIO bucket: {}", self.bucket);
+                info!("MinIO bucket doesn't exist: {}. Creating it...", self.bucket_name);
+                
+                // Create a new bucket instance for creation
+                let endpoint = std::env::var("MINIO_ENDPOINT").unwrap_or_else(|_| "http://localhost:9000".to_string());
+                let access_key = std::env::var("MINIO_ACCESS_KEY").unwrap_or_else(|_| "minioadmin".to_string());
+                let secret_key = std::env::var("MINIO_SECRET_KEY").unwrap_or_else(|_| "minioadmin123".to_string());
+                
+                let credentials = Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)?;
+                let region = Region::Custom {
+                    region: "us-east-1".to_owned(),
+                    endpoint: endpoint.to_owned(),
+                };
+                
+                // Create the bucket using static method
+                Bucket::create(&self.bucket_name, region, credentials, BucketConfiguration::default()).await?;
+                
+                info!("Successfully created MinIO bucket: {}", self.bucket_name);
             }
         }
 
@@ -163,16 +169,10 @@ impl MinioService {
     async fn upload_file(&self, filename: &str, data: Bytes) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let object_name = format!("{}/{}", chrono::Utc::now().format("%Y/%m/%d"), filename);
         
-        self.client
-            .put_object()
-            .bucket(&self.bucket)
-            .key(&object_name)
-            .body(data.into())
-            .send()
-            .await?;
+        self.bucket.put_object(&object_name, data.as_ref()).await?;
 
         // Return URL that will be served through nginx proxy
-        let url = format!("https://rustcameroon.com/minio/{}/{}", self.bucket, object_name);
+        let url = format!("https://rustcameroon.com/minio/{}/{}", self.bucket_name, object_name);
 
         Ok(url)
     }

@@ -37,7 +37,7 @@ services:
       - RUST_LOG=info
       - PORT=8000
       - DATABASE_URL=${DATABASE_URL:-postgres://user:password@localhost:5432/rustcameroon}
-      - MINIO_ENDPOINT=http://localhost:9000
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT:-http://localhost:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minioadmin}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-minioadmin123}
       - MINIO_BUCKET=${MINIO_BUCKET:-rust-cameroon-images}
