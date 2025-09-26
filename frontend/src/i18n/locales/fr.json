@@ -188,7 +188,7 @@
     "login": {
       "title": "Connexion Admin",
       "password": "Mot de passe",
-      "login": "Se connecter",
+      "login": "Connecter",
       "invalidPassword": "Mot de passe invalide"
     },
     "dashboard": {

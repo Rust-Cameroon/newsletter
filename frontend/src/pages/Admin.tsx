@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
-import { postsApi } from '../utils/api';
-import { Post } from '../types';
+import { postsApi, eventsApi } from '../utils/api';
+import { Post, Event } from '../types';
 
 const Admin: React.FC = () => {
   const { t } = useTranslation();
   const { state, dispatch } = useApp();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'posts' | 'events'>('dashboard');
+  
+  // Post management state
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [formData, setFormData] = useState({
@@ -21,6 +24,19 @@ const Admin: React.FC = () => {
     image_url: ''
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
+  // Event management state
+  const [events, setEvents] = useState<Event[]>([]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [eventFormData, setEventFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    event_type: ''
+  });
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
 
@@ -38,8 +54,19 @@ const Admin: React.FC = () => {
       }
     };
 
+    const fetchEvents = async () => {
+      console.log('Fetching events...');
+      try {
+        const eventsData = await eventsApi.getAll();
+        setEvents(eventsData);
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+      }
+    };
+
     if (isAuthenticated) {
       fetchPosts();
+      fetchEvents();
     }
   }, [isAuthenticated, dispatch]);
 
@@ -139,6 +166,57 @@ const Admin: React.FC = () => {
     }
   };
 
+  // Event management functions
+  const handleEventSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingEvent) {
+        const updatedEvent = await eventsApi.update(editingEvent.id, eventFormData);
+        setEvents(events.map(event => event.id === editingEvent.id ? updatedEvent : event));
+        setEditingEvent(null);
+      } else {
+        const newEvent = await eventsApi.create(eventFormData);
+        setEvents([...events, newEvent]);
+      }
+      
+      setShowEventForm(false);
+      setEventFormData({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+        location: '',
+        event_type: ''
+      });
+    } catch (error) {
+      alert('Failed to save event');
+    }
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setEditingEvent(event);
+    setEventFormData({
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      event_type: event.event_type
+    });
+    setShowEventForm(true);
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (confirm('Are you sure you want to delete this event?')) {
+      try {
+        await eventsApi.delete(eventId);
+        setEvents(events.filter(event => event.id !== eventId));
+      } catch (error) {
+        alert('Failed to delete event');
+      }
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -189,21 +267,85 @@ const Admin: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {t('admin.title')}
           </h1>
-          <div className="flex space-x-4">
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              {t('admin.dashboard.newPost')}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              {t('admin.dashboard.logout')}
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            {t('admin.dashboard.logout')}
+          </button>
         </div>
+
+        {/* Dashboard View */}
+        {currentView === 'dashboard' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div 
+              onClick={() => setCurrentView('posts')}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 cursor-pointer hover:shadow-xl transition-shadow border-2 border-transparent hover:border-orange-500"
+            >
+              <div className="text-center">
+                <div className="bg-orange-100 dark:bg-orange-900/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {t('admin.dashboard.posts')}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Manage blog posts, create new articles, and edit existing content.
+                </p>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {state.posts.length} posts
+                </div>
+              </div>
+            </div>
+
+            <div 
+              onClick={() => setCurrentView('events')}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 cursor-pointer hover:shadow-xl transition-shadow border-2 border-transparent hover:border-orange-500"
+            >
+              <div className="text-center">
+                <div className="bg-orange-100 dark:bg-orange-900/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {t('events.title')}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Manage community events, create new events, and update event details.
+                </p>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {events.length} events
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Posts Management View */}
+        {currentView === 'posts' && (
+          <div>
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                  ← {t('common.back')}
+                </button>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {t('admin.dashboard.posts')}
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                {t('admin.dashboard.newPost')}
+              </button>
+            </div>
 
         {/* Create/Edit Post Form */}
         {showCreateForm && (
@@ -391,6 +533,229 @@ const Admin: React.FC = () => {
             </div>
           )}
         </div>
+          </div>
+        )}
+
+        {/* Events Management View */}
+        {currentView === 'events' && (
+          <div>
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                  ← {t('common.back')}
+                </button>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {t('events.title')}
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowEventForm(true)}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                New Event
+              </button>
+            </div>
+
+            {/* Create/Edit Event Form */}
+            {showEventForm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                    {editingEvent ? 'Edit Event' : 'Create New Event'}
+                  </h2>
+                  
+                  <form onSubmit={handleEventSubmit}>
+                    <div className="space-y-4">
+                      <div>
+                        <label htmlFor="event-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          id="event-title"
+                          value={eventFormData.title}
+                          onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="event-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Description
+                        </label>
+                        <textarea
+                          id="event-description"
+                          value={eventFormData.description}
+                          onChange={(e) => setEventFormData({ ...eventFormData, description: e.target.value })}
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="event-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Date
+                          </label>
+                          <input
+                            type="date"
+                            id="event-date"
+                            value={eventFormData.date}
+                            onChange={(e) => setEventFormData({ ...eventFormData, date: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                            required
+                          />
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="event-time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Time
+                          </label>
+                          <input
+                            type="text"
+                            id="event-time"
+                            value={eventFormData.time}
+                            onChange={(e) => setEventFormData({ ...eventFormData, time: e.target.value })}
+                            placeholder="e.g., 6:00 PM - 8:00 PM"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="event-location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Location
+                        </label>
+                        <input
+                          type="text"
+                          id="event-location"
+                          value={eventFormData.location}
+                          onChange={(e) => setEventFormData({ ...eventFormData, location: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="event-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Event Type
+                        </label>
+                        <select
+                          id="event-type"
+                          value={eventFormData.event_type}
+                          onChange={(e) => setEventFormData({ ...eventFormData, event_type: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                          required
+                        >
+                          <option value="">Select event type</option>
+                          <option value="Meetup">Meetup</option>
+                          <option value="Workshop">Workshop</option>
+                          <option value="Conference">Conference</option>
+                          <option value="Hackathon">Hackathon</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end space-x-4 mt-6">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowEventForm(false);
+                          setEditingEvent(null);
+                          setEventFormData({
+                            title: '',
+                            description: '',
+                            date: '',
+                            time: '',
+                            location: '',
+                            event_type: ''
+                          });
+                        }}
+                        className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                      >
+                        {t('admin.dashboard.postForm.cancel')}
+                      </button>
+                      <button
+                        type="submit"
+                        className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                      >
+                        {editingEvent ? 'Update Event' : 'Create Event'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Events List */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Events ({events.length})
+                </h2>
+              </div>
+              
+              {events.length > 0 ? (
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {events.map((event) => (
+                    <div key={event.id} className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                              {event.title}
+                            </h3>
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              event.status === 'upcoming' 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
+                            }`}>
+                              {event.status}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 mb-2">
+                            {event.description}
+                          </p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                            <span>{event.event_type}</span>
+                            <span>{new Date(event.date).toLocaleDateString()}</span>
+                            <span>{event.time}</span>
+                            <span>{event.location}</span>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2 ml-4">
+                          <button
+                            onClick={() => handleEditEvent(event)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          >
+                            {t('common.edit')}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                          >
+                            {t('common.delete')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center">
+                  <p className="text-gray-600 dark:text-gray-400">No events found.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

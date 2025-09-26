@@ -46,13 +46,13 @@ services:
     image: minio/minio:latest
     ports:
       - "9000:9000"
-      - "9001:9001"
     volumes:
       - minio_data:/data
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin123
       - MINIO_BROWSER_REDIRECT_URL=https://rustcameroon.com/minio
+      - MINIO_SERVER_URL=https://rustcameroon.com/minio
     command: server /data --console-address ":9001"
     restart: unless-stopped
     healthcheck:

@@ -188,7 +188,7 @@
     "login": {
       "title": "Admin Login",
       "password": "Password",
-      "login": "Login",
+      "login": "Connect",
       "invalidPassword": "Invalid password"
     },
     "dashboard": {
