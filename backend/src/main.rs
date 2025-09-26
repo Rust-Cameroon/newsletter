@@ -77,13 +77,48 @@ pub struct UpdatePost {
     pub image_url: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Event {
+    pub id: String,
+    pub title: String,
+    pub description: String,
+    pub date: String,
+    pub time: String,
+    pub location: String,
+    pub event_type: String,
+    pub status: String, // "upcoming" or "past"
+    pub created_at: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NewEvent {
+    pub title: String,
+    pub description: String,
+    pub date: String,
+    pub time: String,
+    pub location: String,
+    pub event_type: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateEvent {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub date: Option<String>,
+    pub time: Option<String>,
+    pub location: Option<String>,
+    pub event_type: Option<String>,
+}
+
 // In-memory storage for posts (in production, use a database)
 type PostsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, Post>>>;
+type EventsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, Event>>>;
 
 // Combined application state
 #[derive(Clone, Debug)]
 struct AppState {
     posts: PostsStorage,
+    events: EventsStorage,
     minio: MinioService,
 }
 
@@ -515,9 +550,223 @@ fn load_posts_from_file() -> HashMap<String, Post> {
     HashMap::new()
 }
 
+fn save_events_to_file(events: &HashMap<String, Event>) -> Result<(), Box<dyn std::error::Error>> {
+    let events_vec: Vec<Event> = events.values().cloned().collect();
+    let json = serde_json::to_string_pretty(&events_vec)?;
+    fs::write("events.json", json)?;
+    Ok(())
+}
+
+fn load_events_from_file() -> HashMap<String, Event> {
+    if let Ok(content) = fs::read_to_string("events.json") {
+        if let Ok(events_vec) = serde_json::from_str::<Vec<Event>>(&content) {
+            return events_vec.into_iter().map(|event| (event.id.clone(), event)).collect();
+        }
+    }
+    HashMap::new()
+}
+
+fn determine_event_status(date: &str) -> String {
+    let event_date = match chrono::NaiveDate::parse_from_str(date, "%Y-%m-%d") {
+        Ok(date) => date,
+        Err(_) => return "upcoming".to_string(),
+    };
+    
+    let today = chrono::Local::now().date_naive();
+    
+    if event_date < today {
+        "past".to_string()
+    } else {
+        "upcoming".to_string()
+    }
+}
+
 
 async fn health_check() -> impl IntoResponse {
     "Rust Cameroon API is running!"
+}
+
+// Event API handlers
+#[instrument]
+async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
+    let events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    let mut events_vec: Vec<Event> = events_map.values().cloned().collect();
+    
+    // Sort events by date (newest first)
+    events_vec.sort_by(|a, b| b.date.cmp(&a.date));
+    
+    Json(events_vec).into_response()
+}
+
+#[instrument]
+async fn get_upcoming_events(State(state): State<AppState>) -> impl IntoResponse {
+    let events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    let mut upcoming_events: Vec<Event> = events_map
+        .values()
+        .filter(|event| event.status == "upcoming")
+        .cloned()
+        .collect();
+    
+    // Sort upcoming events by date (earliest first)
+    upcoming_events.sort_by(|a, b| a.date.cmp(&b.date));
+    
+    Json(upcoming_events).into_response()
+}
+
+#[instrument]
+async fn get_past_events(State(state): State<AppState>) -> impl IntoResponse {
+    let events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    let mut past_events: Vec<Event> = events_map
+        .values()
+        .filter(|event| event.status == "past")
+        .cloned()
+        .collect();
+    
+    // Sort past events by date (newest first) and take only 5 most recent
+    past_events.sort_by(|a, b| b.date.cmp(&a.date));
+    past_events.truncate(5);
+    
+    Json(past_events).into_response()
+}
+
+#[instrument]
+async fn create_event(
+    State(state): State<AppState>,
+    Json(new_event): Json<NewEvent>,
+) -> impl IntoResponse {
+    let id = uuid::Uuid::new_v4().to_string();
+    let status = determine_event_status(&new_event.date);
+    let created_at = chrono::Local::now().to_rfc3339();
+    
+    let event = Event {
+        id: id.clone(),
+        title: new_event.title,
+        description: new_event.description,
+        date: new_event.date,
+        time: new_event.time,
+        location: new_event.location,
+        event_type: new_event.event_type,
+        status,
+        created_at,
+    };
+    
+    let mut events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    events_map.insert(id.clone(), event.clone());
+    
+    if let Err(e) = save_events_to_file(&events_map) {
+        error!("Failed to save events to file: {}", e);
+        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save event").into_response();
+    }
+    
+    info!("Created new event: {}", id);
+    (StatusCode::CREATED, Json(event)).into_response()
+}
+
+#[instrument]
+async fn update_event(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(update_event): Json<UpdateEvent>,
+) -> impl IntoResponse {
+    let mut events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    let mut event = match events_map.get(&id) {
+        Some(event) => event.clone(),
+        None => {
+            return (StatusCode::NOT_FOUND, "Event not found").into_response();
+        }
+    };
+    
+    // Update fields if provided
+    if let Some(title) = update_event.title {
+        event.title = title;
+    }
+    if let Some(description) = update_event.description {
+        event.description = description;
+    }
+    if let Some(date) = update_event.date {
+        event.date = date.clone();
+        event.status = determine_event_status(&date);
+    }
+    if let Some(time) = update_event.time {
+        event.time = time;
+    }
+    if let Some(location) = update_event.location {
+        event.location = location;
+    }
+    if let Some(event_type) = update_event.event_type {
+        event.event_type = event_type;
+    }
+    
+    events_map.insert(id.clone(), event.clone());
+    
+    if let Err(e) = save_events_to_file(&events_map) {
+        error!("Failed to save events to file: {}", e);
+        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save event").into_response();
+    }
+    
+    info!("Updated event: {}", id);
+    Json(event).into_response()
+}
+
+#[instrument]
+async fn delete_event(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    let mut events_map = match state.events.lock() {
+        Ok(events) => events,
+        Err(_) => {
+            error!("Failed to acquire events lock");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+        }
+    };
+    
+    if events_map.remove(&id).is_none() {
+        return (StatusCode::NOT_FOUND, "Event not found").into_response();
+    }
+    
+    if let Err(e) = save_events_to_file(&events_map) {
+        error!("Failed to save events to file: {}", e);
+        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save events").into_response();
+    }
+    
+    info!("Deleted event: {}", id);
+    (StatusCode::NO_CONTENT, ()).into_response()
 }
 
 #[tokio::main]
@@ -541,6 +790,9 @@ async fn main() {
 
     // Load posts from file
     let posts_storage = PostsStorage::new(std::sync::Mutex::new(load_posts_from_file()));
+    
+    // Load events from file
+    let events_storage = EventsStorage::new(std::sync::Mutex::new(load_events_from_file()));
 
     // Initialize MinIO service
     let minio_service = match MinioService::new(&config).await {
@@ -557,6 +809,7 @@ async fn main() {
     // Create combined application state
     let app_state = AppState {
         posts: posts_storage,
+        events: events_storage,
         minio: minio_service,
     };
 
@@ -571,6 +824,11 @@ async fn main() {
         .route("/posts/slug/:slug", get(get_post))
         .route("/posts/update/:id", put(update_post))
         .route("/posts/delete/:id", delete(delete_post))
+        .route("/events", get(get_events).post(create_event))
+        .route("/events/upcoming", get(get_upcoming_events))
+        .route("/events/past", get(get_past_events))
+        .route("/events/update/:id", put(update_event))
+        .route("/events/delete/:id", delete(delete_event))
         .nest_service("/static", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()

@@ -15,9 +15,11 @@ export interface Event {
   title: string;
   description: string;
   date: string;
+  time: string;
   location: string;
-  image_url?: string;
-  registration_url?: string;
+  event_type: string;
+  status: string; // "upcoming" or "past"
+  created_at: string;
 }
 
 export interface AdminUser {

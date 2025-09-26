@@ -1,45 +1,13 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useUpcomingEvents, usePastEvents } from '../hooks/useEvents';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 const Events: React.FC = () => {
   const { t } = useTranslation();
-  // Mock events data - in a real app, this would come from an API
-  const events = [
-    {
-      id: '1',
-      title: 'Rust Cameroon Monthly Meetup',
-      description: 'Join us for our monthly meetup where we discuss Rust topics, share projects, and network with fellow Rustaceans.',
-      date: '2024-02-15',
-      time: '6:00 PM - 8:00 PM',
-      location: 'Douala Tech Hub, Douala',
-      type: 'Meetup',
-      status: 'upcoming'
-    },
-    {
-      id: '2',
-      title: 'Rust for Web Development Workshop',
-      description: 'Learn how to build web applications with Rust using frameworks like Actix Web and Axum.',
-      date: '2024-02-28',
-      time: '9:00 AM - 5:00 PM',
-      location: 'Yaoundé Innovation Center, Yaoundé',
-      type: 'Workshop',
-      status: 'upcoming'
-    },
-    {
-      id: '3',
-      title: 'Rust Systems Programming Deep Dive',
-      description: 'Explore advanced systems programming concepts with Rust, including memory management and concurrency.',
-      date: '2024-01-20',
-      time: '2:00 PM - 6:00 PM',
-      location: 'Buea Tech Space, Buea',
-      type: 'Workshop',
-      status: 'past'
-    }
-  ];
-
-  const upcomingEvents = events.filter(event => event.status === 'upcoming');
-  const pastEvents = events.filter(event => event.status === 'past');
+  const { events: upcomingEvents, loading: upcomingLoading, error: upcomingError } = useUpcomingEvents();
+  const { events: pastEvents, loading: pastLoading, error: pastError } = usePastEvents();
 
   return (
     <>
@@ -105,14 +73,30 @@ const Events: React.FC = () => {
             {t('events.upcoming')}
           </h2>
           
-          {upcomingEvents.length > 0 ? (
+          {upcomingLoading ? (
+            <LoadingSpinner size="lg" text={t('common.loading')} />
+          ) : upcomingError ? (
+            <div className="text-center py-12">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md mx-auto">
+                <svg className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">
+                  {t('common.error')}
+                </h3>
+                <p className="text-red-600 dark:text-red-400">
+                  {upcomingError}
+                </p>
+              </div>
+            </div>
+          ) : upcomingEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {upcomingEvents.map((event) => (
                 <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm font-medium rounded-full">
-                        {event.type}
+                        {event.event_type}
                       </span>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {new Date(event.date).toLocaleDateString()}
@@ -171,14 +155,30 @@ const Events: React.FC = () => {
             {t('events.past')}
           </h2>
           
-          {pastEvents.length > 0 ? (
+          {pastLoading ? (
+            <LoadingSpinner size="lg" text={t('common.loading')} />
+          ) : pastError ? (
+            <div className="text-center py-12">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md mx-auto">
+                <svg className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-lg font-medium text-red-800 dark:text-red-200 mb-2">
+                  {t('common.error')}
+                </h3>
+                <p className="text-red-600 dark:text-red-400">
+                  {pastError}
+                </p>
+              </div>
+            </div>
+          ) : pastEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {pastEvents.map((event) => (
                 <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden opacity-75">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm font-medium rounded-full">
-                        {event.type}
+                        {event.event_type}
                       </span>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {new Date(event.date).toLocaleDateString()}
@@ -230,9 +230,12 @@ const Events: React.FC = () => {
             <p className="text-lg mb-6 opacity-90">
               {t('events.organizeEvent.description')}
             </p>
-            <button className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <a
+              href="mailto:inforustcameroon@gmail.com"
+              className="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block"
+            >
               {t('events.organizeEvent.contactUs')}
-            </button>
+            </a>
           </div>
         </section>
       </div>
