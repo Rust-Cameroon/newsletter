@@ -1,7 +1,7 @@
 {
-  "name": "Rust Cameroon - Building the Future with Rust",
+  "name": "Rust Cameroon/Cameroun - Building the Future with Rust",
   "short_name": "Rust Cameroon",
-  "description": "Join the vibrant Rust community in Cameroon. Learn, share, and build amazing projects with Rust programming language.",
+  "description": "Join the vibrant Rust community in Cameroon/Cameroun. Learn, share, and build amazing projects with Rust programming language.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -194,11 +194,51 @@ impl MinioService {
             }
         }
 
+        // Set bucket policy for public read access
+        self.set_bucket_policy().await?;
+
+        Ok(())
+    }
+
+    async fn set_bucket_policy(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let policy = format!(
+            r#"{{
+                "Version": "2012-10-17",
+                "Statement": [
+                    {{
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "Action": "s3:GetObject",
+                        "Resource": "arn:aws:s3:::{}/*"
+                    }}
+                ]
+            }}"#,
+            self.bucket_name
+        );
+
+        match self.client
+            .put_bucket_policy()
+            .bucket(&self.bucket_name)
+            .policy(policy)
+            .send()
+            .await {
+            Ok(_) => {
+                info!("Successfully set public read policy for bucket: {}", self.bucket_name);
+            }
+            Err(e) => {
+                error!("Failed to set bucket policy: {:?}", e);
+                // Don't fail the entire operation if policy setting fails
+                // The bucket will still work, just might not be publicly accessible
+            }
+        }
+
         Ok(())
     }
 
     async fn upload_file(&self, filename: &str, data: Bytes) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         let object_name = format!("{}/{}", chrono::Utc::now().format("%Y/%m/%d"), filename);
+        
+        info!("Uploading file: {} to bucket: {} with key: {}", filename, self.bucket_name, object_name);
         
         self.client
             .put_object()
@@ -210,6 +250,8 @@ impl MinioService {
 
         // Return URL that will be served through nginx proxy
         let url = format!("https://rustcameroon.com/minio/{}/{}", self.bucket_name, object_name);
+        
+        info!("File uploaded successfully. URL: {}", url);
 
         Ok(url)
     }
@@ -217,10 +259,16 @@ impl MinioService {
 
 #[instrument]
 async fn get_posts(State(state): State<AppState>) -> impl IntoResponse {
-    let posts = state.posts.lock().unwrap();
+    let posts = match state.posts.lock() {
+        Ok(posts) => posts,
+        Err(e) => {
+            error!("Failed to acquire posts lock: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
+        }
+    };
     let posts_vec: Vec<Post> = posts.values().cloned().collect();
     info!("Fetched all posts");
-    Json(posts_vec)
+    Json(posts_vec).into_response()
 }
 
 #[instrument]
@@ -228,7 +276,13 @@ async fn get_post(
     Path(slug): Path<String>,
     State(state): State<AppState>,
 ) -> impl IntoResponse {
-    let posts = state.posts.lock().unwrap();
+    let posts = match state.posts.lock() {
+        Ok(posts) => posts,
+        Err(e) => {
+            error!("Failed to acquire posts lock: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
+        }
+    };
     match posts.get(&slug) {
         Some(post) => {
             info!("Fetched post with slug: {}", slug);
@@ -250,14 +304,30 @@ async fn create_post(
     let mut image_url = None;
     
     // Parse multipart form data
-    while let Some(field) = multipart.next_field().await.unwrap() {
+    loop {
+        let field_result = multipart.next_field().await;
+        let field = match field_result {
+            Ok(Some(field)) => field,
+            Ok(None) => break, // No more fields
+            Err(e) => {
+                error!("Failed to parse multipart field: {}", e);
+                return (StatusCode::BAD_REQUEST, format!("Failed to parse form data: {}", e)).into_response();
+            }
+        };
+        
         if let Some(name) = field.name() {
             match name {
                 "file" => {
                     // Handle file upload
                     if let Some(filename) = field.file_name() {
                         let filename = filename.to_string();
-                        let data = field.bytes().await.unwrap();
+                        let data = match field.bytes().await {
+                            Ok(data) => data,
+                            Err(e) => {
+                                error!("Failed to read file data: {}", e);
+                                return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file data: {}", e)).into_response();
+                            }
+                        };
                         match state.minio.upload_file(&filename, data).await {
                             Ok(url) => {
                                 let url_clone = url.clone();
@@ -318,7 +388,13 @@ async fn create_post(
         image_url,
     };
 
-    let mut posts = state.posts.lock().unwrap();
+    let mut posts = match state.posts.lock() {
+        Ok(posts) => posts,
+        Err(e) => {
+            error!("Failed to acquire posts lock: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save post: database lock error").into_response();
+        }
+    };
     posts.insert(slug.clone(), post.clone());
     
     // Save to JSON file
@@ -337,7 +413,13 @@ async fn update_post(
     State(state): State<AppState>,
     Json(update_data): Json<UpdatePost>,
 ) -> impl IntoResponse {
-    let mut posts = state.posts.lock().unwrap();
+    let mut posts = match state.posts.lock() {
+        Ok(posts) => posts,
+        Err(e) => {
+            error!("Failed to acquire posts lock: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
+        }
+    };
     
     // Find the post by ID
     let post_to_update = posts.values().find(|post| post.id == id).cloned();
@@ -389,7 +471,13 @@ async fn delete_post(
     Path(id): Path<String>,
     State(state): State<AppState>,
 ) -> impl IntoResponse {
-    let mut posts = state.posts.lock().unwrap();
+    let mut posts = match state.posts.lock() {
+        Ok(posts) => posts,
+        Err(e) => {
+            error!("Failed to acquire posts lock: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
+        }
+    };
     
     // Find the post by ID and remove it
     let post_to_remove = posts.values().find(|post| post.id == id).cloned();
