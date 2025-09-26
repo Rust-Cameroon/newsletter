@@ -38,7 +38,8 @@ services:
       - MINIO_SECRET_KEY=minioadmin123
       - MINIO_BUCKET=rust-cameroon-images
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     restart: unless-stopped
 
   minio:
