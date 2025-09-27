@@ -57,6 +57,7 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY:-minioadmin123}
       - MINIO_BROWSER_REDIRECT_URL=https://rustcameroon.com/minio
       - MINIO_SERVER_URL=https://rustcameroon.com/minio
+      - MINIO_DOMAIN=rustcameroon.com
     command: server /data --console-address ":9001"
     restart: unless-stopped
     healthcheck:
