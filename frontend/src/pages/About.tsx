@@ -139,7 +139,7 @@ const About: React.FC = () => {
                 {t('about.joinCommunity.discord')}
               </a>
               <a
-                href="https://chat.whatsapp.com/KDmvD35W4kzGQK4EpErpAd"
+                href="https://wa.me/237"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"

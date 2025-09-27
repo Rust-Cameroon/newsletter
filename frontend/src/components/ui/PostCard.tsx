@@ -1,23 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Post } from '../../types';
-import HybridImage from './HybridImage';
 
 interface PostCardProps {
   post: Post;
-  isFirstFive?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, isFirstFive = false }) => {
+const PostCard: React.FC<PostCardProps> = ({ post }) => {
   return (
     <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {post.image_url && (
         <div className="aspect-w-16 aspect-h-9">
-          <HybridImage
+          <img
             src={post.image_url}
             alt={post.title}
             className="w-full h-48 object-cover"
-            isFirstFive={isFirstFive}
           />
         </div>
       )}
