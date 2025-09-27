@@ -325,7 +325,28 @@ async fn get_post(
     match posts.get(&slug) {
         Some(post) => {
             info!("Fetched post with slug: {}", slug);
-            Json(post.clone()).into_response()
+            let mut post_with_local_image = post.clone();
+            
+            // Check if this post should use local storage (first 5 posts)
+            let posts_vec: Vec<Post> = posts.values().cloned().collect();
+            let mut sorted_posts = posts_vec;
+            sorted_posts.sort_by(|a, b| b.date.cmp(&a.date));
+            
+            // Find the index of this post in the sorted list
+            if let Some(index) = sorted_posts.iter().position(|p| p.id == post.id) {
+                if index < 5 && post_with_local_image.image_url.is_some() {
+                    let local_url = format!("/static/images/{}.jpg", post_with_local_image.id);
+                    // Check if local file exists
+                    if StdPath::new(&format!("static/images/{}.jpg", post_with_local_image.id)).exists() {
+                        post_with_local_image.image_url = Some(local_url.clone());
+                        info!("Using local image for individual post {}: {}", post_with_local_image.id, local_url);
+                    } else {
+                        info!("Local image not found for individual post {}, using MinIO URL", post_with_local_image.id);
+                    }
+                }
+            }
+            
+            Json(post_with_local_image).into_response()
         }
         None => {
             error!("Post not found with slug: {}", slug);
@@ -625,6 +646,7 @@ fn determine_event_status(date: &str) -> String {
         "upcoming".to_string()
     }
 }
+
 
 // Save image locally for first 5 posts
 async fn save_image_locally(image_data: &[u8], filename: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {

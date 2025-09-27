@@ -37,14 +37,28 @@ const HybridImage: React.FC<HybridImageProps> = ({
   const handleImageError = () => {
     if (!hasError) {
       setHasError(true);
-      // If this is a local URL that failed, try the original MinIO URL
-      if (imageSrc.includes('/static/images/') && src && !src.includes('/static/images/')) {
+      // If this is a MinIO URL that failed, try the local URL
+      if (imageSrc.includes('minio') && src && !src.includes('/static/images/')) {
+        const postId = extractPostIdFromMinioUrl(imageSrc);
+        if (postId) {
+          const localUrl = `/static/images/${postId}.jpg`;
+          console.log('MinIO image failed, trying local URL:', localUrl);
+          setImageSrc(localUrl);
+        }
+      } else if (imageSrc.includes('/static/images/') && src && !src.includes('/static/images/')) {
         console.log('Local image failed, falling back to MinIO URL:', src);
         setImageSrc(src);
       } else if (fallbackSrc) {
         setImageSrc(fallbackSrc);
       }
     }
+  };
+
+  const extractPostIdFromMinioUrl = (url: string): string | null => {
+    // Extract post ID from MinIO URL
+    // URL format: https://rustcameroon.com/minio/rust-cameroon-images/2025/09/27/filename.jpg
+    const match = url.match(/\/([^\/]+)\.(jpg|jpeg|png|gif)$/i);
+    return match ? match[1] : null;
   };
 
   if (isLoading) {
