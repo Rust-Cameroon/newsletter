@@ -1,26 +1,32 @@
 use axum::{
-    extract::{Path, Multipart, State},
-    http::StatusCode,
+    extract::{Path, Multipart, State, Request},
+    http::{StatusCode, HeaderMap},
     response::IntoResponse,
-    routing::{get, delete, put},
-    Json, Router,
+    routing::{get, delete, put, post},
+    Json, Router, middleware,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
+use std::path::Path as StdPath;
 use tower::ServiceBuilder;
 use tower_http::{
     cors::{Any, CorsLayer},
     services::ServeDir,
     trace::TraceLayer,
 };
-use tracing::{info, error, instrument};
+// use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
+use tracing::{info, error, instrument, warn};
 use tracing_subscriber;
 use aws_sdk_s3::Client as S3Client;
 use bytes::Bytes;
 use envconfig::Envconfig;
+use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
+use chrono::{Utc, Duration};
+use sha2::{Sha256, Digest};
+use base64::Engine;
 
-#[derive(Envconfig)]
+#[derive(Envconfig, Clone, Debug)]
 pub struct Config {
     #[envconfig(from = "PORT", default = "8000")]
     pub port: u16,
@@ -42,6 +48,46 @@ pub struct Config {
 
     #[envconfig(from = "MINIO_BUCKET", default = "rust-cameroon-images")]
     pub minio_bucket: String,
+
+    #[envconfig(from = "JWT_SECRET", default = "RustCameroon-JWT-Secret-2024-Change-In-Production")]
+    pub jwt_secret: String,
+
+    #[envconfig(from = "ADMIN_PASSWORD", default = "RustCameroon2024!")]
+    pub admin_password: String,
+
+    #[envconfig(from = "ADMIN_IP_WHITELIST", default = "")]
+    pub admin_ip_whitelist: String,
+}
+
+// JWT Claims
+#[derive(Debug, Serialize, Deserialize)]
+struct Claims {
+    sub: String,
+    exp: usize,
+    iat: usize,
+    admin: bool,
+}
+
+// Login request
+#[derive(Debug, Deserialize)]
+struct LoginRequest {
+    password: String,
+}
+
+// Login response
+#[derive(Debug, Serialize)]
+struct LoginResponse {
+    token: String,
+    expires_in: u64,
+}
+
+// Admin session tracking
+#[derive(Debug, Clone)]
+struct AdminSession {
+    user_id: String,
+    created_at: chrono::DateTime<Utc>,
+    last_activity: chrono::DateTime<Utc>,
+    ip_address: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -116,13 +162,16 @@ pub struct UpdateEvent {
 // In-memory storage for posts (in production, use a database)
 type PostsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, Post>>>;
 type EventsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, Event>>>;
+type SessionsStorage = std::sync::Arc<std::sync::Mutex<HashMap<String, AdminSession>>>;
 
 // Combined application state
 #[derive(Clone, Debug)]
 struct AppState {
     posts: PostsStorage,
     events: EventsStorage,
+    sessions: SessionsStorage,
     minio: MinioService,
+    config: Config,
 }
 
 // MinIO client wrapper using AWS SDK configured for MinIO
@@ -304,8 +353,8 @@ async fn get_posts(State(state): State<AppState>) -> impl IntoResponse {
             return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
         }
     };
-    let posts_vec: Vec<Post> = posts.values().cloned().collect();
-    info!("Fetched all posts");
+    let posts_vec = get_posts_with_local_images(&posts);
+    info!("Fetched all posts with local images for first 5");
     Json(posts_vec).into_response()
 }
 
@@ -340,6 +389,7 @@ async fn create_post(
 ) -> impl IntoResponse {
     let mut post_data = std::collections::HashMap::new();
     let mut image_url = None;
+    let mut image_data = None;
     
     // Parse multipart form data
     loop {
@@ -366,14 +416,18 @@ async fn create_post(
                                 return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file data: {}", e)).into_response();
                             }
                         };
-                        match state.minio.upload_file(&filename, data).await {
+                        // Upload to MinIO first
+                        match state.minio.upload_file(&filename, data.clone()).await {
                             Ok(url) => {
                                 let url_clone = url.clone();
                                 image_url = Some(url);
-                                info!("Uploaded image: {} -> {}", filename, url_clone);
+                                info!("Uploaded image to MinIO: {} -> {}", filename, url_clone);
+                                
+                                // Store image data for potential local saving
+                                image_data = Some(data);
                             }
                             Err(e) => {
-                                error!("Failed to upload image: {}", e);
+                                error!("Failed to upload image to MinIO: {}", e);
                                 return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to upload image: {}", e)).into_response();
                             }
                         }
@@ -426,6 +480,34 @@ async fn create_post(
         image_url,
     };
 
+    // First, check if this post will be in the first 5 and save image locally if needed
+    let should_save_locally = {
+        let posts = match state.posts.lock() {
+            Ok(posts) => posts,
+            Err(e) => {
+                error!("Failed to acquire posts lock: {}", e);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save post: database lock error").into_response();
+            }
+        };
+        is_in_first_five_posts(&posts, &post.id)
+    };
+    
+    // Save image locally if needed (before acquiring the mutex again)
+    if let Some(data) = image_data {
+        if should_save_locally {
+            let filename = format!("{}.jpg", post.id);
+            match save_image_locally(&data, &filename).await {
+                Ok(local_url) => {
+                    info!("Saved image locally for first 5 post: {} -> {}", post.id, local_url);
+                }
+                Err(e) => {
+                    warn!("Failed to save image locally for post {}: {}", post.id, e);
+                }
+            }
+        }
+    }
+    
+    // Now acquire the mutex again to save the post
     let mut posts = match state.posts.lock() {
         Ok(posts) => posts,
         Err(e) => {
@@ -592,9 +674,267 @@ fn determine_event_status(date: &str) -> String {
     }
 }
 
+// Save image locally for first 5 posts
+async fn save_image_locally(image_data: &[u8], filename: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    // Create local images directory if it doesn't exist
+    let local_images_dir = "static/images";
+    if !StdPath::new(local_images_dir).exists() {
+        fs::create_dir_all(local_images_dir)?;
+    }
+    
+    let local_path = format!("{}/{}", local_images_dir, filename);
+    fs::write(&local_path, image_data)?;
+    
+    Ok(format!("/static/images/{}", filename))
+}
+
+// Check if post is in the first 5 (most recent)
+fn is_in_first_five_posts(posts: &HashMap<String, Post>, post_id: &str) -> bool {
+    let mut posts_vec: Vec<&Post> = posts.values().collect();
+    posts_vec.sort_by(|a, b| b.date.cmp(&a.date));
+    
+    posts_vec.iter().take(5).any(|post| post.id == post_id)
+}
+
+// Get posts with local image URLs for first 5 posts
+fn get_posts_with_local_images(posts: &HashMap<String, Post>) -> Vec<Post> {
+    let mut posts_vec: Vec<Post> = posts.values().cloned().collect();
+    posts_vec.sort_by(|a, b| b.date.cmp(&a.date));
+    
+    // Update image URLs for first 5 posts to use local storage
+    for (index, post) in posts_vec.iter_mut().enumerate() {
+        if index < 5 && post.image_url.is_some() {
+            let local_url = format!("/static/images/{}.jpg", post.id);
+            // Check if local file exists
+            if StdPath::new(&format!("static/images/{}.jpg", post.id)).exists() {
+                post.image_url = Some(local_url);
+            }
+        }
+    }
+    
+    posts_vec
+}
+
 
 async fn health_check() -> impl IntoResponse {
     "Rust Cameroon API is running!"
+}
+
+// Authentication functions
+fn create_jwt_token(user_id: &str, secret: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    let now = Utc::now();
+    let exp = now + Duration::hours(24); // Token expires in 24 hours
+    
+    let claims = Claims {
+        sub: user_id.to_string(),
+        exp: exp.timestamp() as usize,
+        iat: now.timestamp() as usize,
+        admin: true,
+    };
+    
+    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_ref()))?;
+    Ok(token)
+}
+
+fn verify_jwt_token(token: &str, secret: &str) -> Result<Claims, Box<dyn std::error::Error + Send + Sync>> {
+    let validation = Validation::new(Algorithm::HS256);
+    let token_data = decode::<Claims>(token, &DecodingKey::from_secret(secret.as_ref()), &validation)?;
+    Ok(token_data.claims)
+}
+
+fn hash_password(password: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(password.as_bytes());
+    let result = hasher.finalize();
+    base64::engine::general_purpose::STANDARD.encode(result)
+}
+
+fn verify_password(password: &str, hashed: &str) -> bool {
+    let hashed_input = hash_password(password);
+    hashed_input == hashed
+}
+
+// IP whitelist check
+fn is_ip_allowed(ip: &str, whitelist: &str) -> bool {
+    if whitelist.is_empty() {
+        return true; // No whitelist means all IPs allowed
+    }
+    
+    let allowed_ips: Vec<&str> = whitelist.split(',').map(|s| s.trim()).collect();
+    allowed_ips.contains(&ip)
+}
+
+// Authentication middleware
+async fn auth_middleware(
+    headers: HeaderMap,
+    State(state): State<AppState>,
+    request: Request,
+    next: middleware::Next,
+) -> Result<impl IntoResponse, StatusCode> {
+    let path = request.uri().path();
+    
+    // Skip authentication for non-admin routes
+    if !path.starts_with("/admin") && !path.starts_with("/posts") && !path.starts_with("/events") {
+        return Ok(next.run(request).await);
+    }
+    
+    // Skip authentication for login endpoint
+    if path == "/admin/login" {
+        return Ok(next.run(request).await);
+    }
+    
+    // Get authorization header
+    let auth_header = headers.get("Authorization");
+    let token = match auth_header {
+        Some(header) => {
+            let header_str = header.to_str().unwrap_or("");
+            if header_str.starts_with("Bearer ") {
+                &header_str[7..]
+            } else {
+                return Err(StatusCode::UNAUTHORIZED);
+            }
+        }
+        None => {
+            return Err(StatusCode::UNAUTHORIZED);
+        }
+    };
+    
+    // Verify JWT token
+    let claims = match verify_jwt_token(token, &state.config.jwt_secret) {
+        Ok(claims) => claims,
+        Err(_) => {
+            return Err(StatusCode::UNAUTHORIZED);
+        }
+    };
+    
+    // Check if token is expired
+    let now = Utc::now().timestamp() as usize;
+    if claims.exp < now {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+    
+    // Check if user is admin
+    if !claims.admin {
+        return Err(StatusCode::FORBIDDEN);
+    }
+    
+    // Continue to the next handler
+    Ok(next.run(request).await)
+}
+
+// Login endpoint
+#[instrument]
+async fn admin_login(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(login_req): Json<LoginRequest>,
+) -> impl IntoResponse {
+    // Get client IP
+    let client_ip = headers
+        .get("x-forwarded-for")
+        .or_else(|| headers.get("x-real-ip"))
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string();
+    
+    // Check IP whitelist
+    if !is_ip_allowed(&client_ip, &state.config.admin_ip_whitelist) {
+        warn!("Login attempt from non-whitelisted IP: {}", client_ip);
+        return (StatusCode::FORBIDDEN, "Access denied from this IP").into_response();
+    }
+    
+    // Verify password
+    let hashed_password = hash_password(&state.config.admin_password);
+    if !verify_password(&login_req.password, &hashed_password) {
+        warn!("Failed login attempt from IP: {}", client_ip);
+        return (StatusCode::UNAUTHORIZED, "Invalid credentials").into_response();
+    }
+    
+    // Create JWT token
+    let user_id = "admin".to_string();
+    let token = match create_jwt_token(&user_id, &state.config.jwt_secret) {
+        Ok(token) => token,
+        Err(e) => {
+            error!("Failed to create JWT token: {}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to create token").into_response();
+        }
+    };
+    
+    // Create session
+    let session = AdminSession {
+        user_id: user_id.clone(),
+        created_at: Utc::now(),
+        last_activity: Utc::now(),
+        ip_address: client_ip.clone(),
+    };
+    
+    // Store session
+    {
+        let mut sessions = match state.sessions.lock() {
+            Ok(sessions) => sessions,
+            Err(_) => {
+                error!("Failed to acquire sessions lock");
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+            }
+        };
+        sessions.insert(user_id.clone(), session);
+    }
+    
+    info!("Admin login successful from IP: {}", client_ip);
+    
+    let response = LoginResponse {
+        token,
+        expires_in: 86400, // 24 hours in seconds
+    };
+    
+    (StatusCode::OK, Json(response)).into_response()
+}
+
+// Logout endpoint
+#[instrument]
+async fn admin_logout(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> impl IntoResponse {
+    // Get authorization header
+    let auth_header = headers.get("Authorization");
+    let token = match auth_header {
+        Some(header) => {
+            let header_str = header.to_str().unwrap_or("");
+            if header_str.starts_with("Bearer ") {
+                &header_str[7..]
+            } else {
+                return (StatusCode::UNAUTHORIZED, "Invalid authorization header").into_response();
+            }
+        }
+        None => {
+            return (StatusCode::UNAUTHORIZED, "Missing authorization header").into_response();
+        }
+    };
+    
+    // Verify JWT token to get user ID
+    let claims = match verify_jwt_token(token, &state.config.jwt_secret) {
+        Ok(claims) => claims,
+        Err(_) => {
+            return (StatusCode::UNAUTHORIZED, "Invalid token").into_response();
+        }
+    };
+    
+    // Remove session
+    {
+        let mut sessions = match state.sessions.lock() {
+            Ok(sessions) => sessions,
+            Err(_) => {
+                error!("Failed to acquire sessions lock");
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error").into_response();
+            }
+        };
+        sessions.remove(&claims.sub);
+    }
+    
+    info!("Admin logout successful for user: {}", claims.sub);
+    
+    (StatusCode::OK, "Logged out successfully").into_response()
 }
 
 // Event API handlers
@@ -808,6 +1148,9 @@ async fn main() {
     
     // Load events from file
     let events_storage = EventsStorage::new(std::sync::Mutex::new(load_events_from_file()));
+    
+    // Initialize sessions storage
+    let sessions_storage = SessionsStorage::new(std::sync::Mutex::new(HashMap::new()));
 
     // Initialize MinIO service
     let minio_service = match MinioService::new(&config).await {
@@ -825,7 +1168,9 @@ async fn main() {
     let app_state = AppState {
         posts: posts_storage,
         events: events_storage,
+        sessions: sessions_storage,
         minio: minio_service,
+        config: config.clone(),
     };
 
     let cors = CorsLayer::new()
@@ -833,22 +1178,37 @@ async fn main() {
         .allow_origin(Any)
         .allow_headers(Any);
 
+    // Rate limiting configuration (disabled for now)
+    // let governor_conf = GovernorConfigBuilder::default()
+    //     .per_second(10)
+    //     .burst_size(20)
+    //     .finish()
+    //     .unwrap();
+
     let app = Router::new()
         .route("/", get(health_check))
-        .route("/posts", get(get_posts).post(create_post))
+        // Public routes (no authentication required)
+        .route("/posts", get(get_posts))
         .route("/posts/slug/:slug", get(get_post))
-        .route("/posts/update/:id", put(update_post))
-        .route("/posts/delete/:id", delete(delete_post))
-        .route("/events", get(get_events).post(create_event))
+        .route("/events", get(get_events))
         .route("/events/upcoming", get(get_upcoming_events))
         .route("/events/past", get(get_past_events))
+        // Admin authentication routes
+        .route("/admin/login", post(admin_login))
+        .route("/admin/logout", post(admin_logout))
+        // Protected admin routes (require authentication)
+        .route("/posts", post(create_post))
+        .route("/posts/update/:id", put(update_post))
+        .route("/posts/delete/:id", delete(delete_post))
+        .route("/events", post(create_event))
         .route("/events/update/:id", put(update_event))
         .route("/events/delete/:id", delete(delete_event))
         .nest_service("/static", ServeDir::new("static"))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
-                .layer(cors),
+                .layer(cors)
+                .layer(middleware::from_fn_with_state(app_state.clone(), auth_middleware)),
         )
         .with_state(app_state);
 
