@@ -8,13 +8,14 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
+use std::path::Path as StdPath;
 use tower::ServiceBuilder;
 use tower_http::{
     cors::{Any, CorsLayer},
     services::ServeDir,
     trace::TraceLayer,
 };
-use tracing::{info, error, instrument};
+use tracing::{info, error, warn, instrument};
 use tracing_subscriber;
 use aws_sdk_s3::Client as S3Client;
 use bytes::Bytes;
@@ -304,8 +305,8 @@ async fn get_posts(State(state): State<AppState>) -> impl IntoResponse {
             return (StatusCode::INTERNAL_SERVER_ERROR, "Database lock error").into_response();
         }
     };
-    let posts_vec: Vec<Post> = posts.values().cloned().collect();
-    info!("Fetched all posts");
+    let posts_vec = get_posts_with_local_images(&posts);
+    info!("Fetched all posts with local images for first 5");
     Json(posts_vec).into_response()
 }
 
@@ -340,6 +341,7 @@ async fn create_post(
 ) -> impl IntoResponse {
     let mut post_data = std::collections::HashMap::new();
     let mut image_url = None;
+    let mut image_data = None;
     
     // Parse multipart form data
     loop {
@@ -366,14 +368,18 @@ async fn create_post(
                                 return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to read file data: {}", e)).into_response();
                             }
                         };
-                        match state.minio.upload_file(&filename, data).await {
+                        // Upload to MinIO first
+                        match state.minio.upload_file(&filename, data.clone()).await {
                             Ok(url) => {
                                 let url_clone = url.clone();
                                 image_url = Some(url);
-                                info!("Uploaded image: {} -> {}", filename, url_clone);
+                                info!("Uploaded image to MinIO: {} -> {}", filename, url_clone);
+                                
+                                // Store image data for potential local saving
+                                image_data = Some(data);
                             }
                             Err(e) => {
-                                error!("Failed to upload image: {}", e);
+                                error!("Failed to upload image to MinIO: {}", e);
                                 return (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to upload image: {}", e)).into_response();
                             }
                         }
@@ -426,6 +432,34 @@ async fn create_post(
         image_url,
     };
 
+    // First, check if this post will be in the first 5 and save image locally if needed
+    let should_save_locally = {
+        let posts = match state.posts.lock() {
+            Ok(posts) => posts,
+            Err(e) => {
+                error!("Failed to acquire posts lock: {}", e);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save post: database lock error").into_response();
+            }
+        };
+        is_in_first_five_posts(&posts, &post.id)
+    };
+    
+    // Save image locally if needed (before acquiring the mutex again)
+    if let Some(data) = image_data {
+        if should_save_locally {
+            let filename = format!("{}.jpg", post.id);
+            match save_image_locally(&data, &filename).await {
+                Ok(local_url) => {
+                    info!("Saved image locally for first 5 post: {} -> {}", post.id, local_url);
+                }
+                Err(e) => {
+                    warn!("Failed to save image locally for post {}: {}", post.id, e);
+                }
+            }
+        }
+    }
+    
+    // Now acquire the mutex again to save the post
     let mut posts = match state.posts.lock() {
         Ok(posts) => posts,
         Err(e) => {
@@ -590,6 +624,47 @@ fn determine_event_status(date: &str) -> String {
     } else {
         "upcoming".to_string()
     }
+}
+
+// Save image locally for first 5 posts
+async fn save_image_locally(image_data: &[u8], filename: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    // Create local images directory if it doesn't exist
+    let local_images_dir = "static/images";
+    if !StdPath::new(local_images_dir).exists() {
+        fs::create_dir_all(local_images_dir)?;
+    }
+    
+    let local_path = format!("{}/{}", local_images_dir, filename);
+    fs::write(&local_path, image_data)?;
+    
+    Ok(format!("/static/images/{}", filename))
+}
+
+// Check if post is in the first 5 (most recent)
+fn is_in_first_five_posts(posts: &HashMap<String, Post>, post_id: &str) -> bool {
+    let mut posts_vec: Vec<&Post> = posts.values().collect();
+    posts_vec.sort_by(|a, b| b.date.cmp(&a.date));
+    
+    posts_vec.iter().take(5).any(|post| post.id == post_id)
+}
+
+// Get posts with local image URLs for first 5 posts
+fn get_posts_with_local_images(posts: &HashMap<String, Post>) -> Vec<Post> {
+    let mut posts_vec: Vec<Post> = posts.values().cloned().collect();
+    posts_vec.sort_by(|a, b| b.date.cmp(&a.date));
+    
+    // Update image URLs for first 5 posts to use local storage
+    for (index, post) in posts_vec.iter_mut().enumerate() {
+        if index < 5 && post.image_url.is_some() {
+            let local_url = format!("/static/images/{}.jpg", post.id);
+            // Check if local file exists
+            if StdPath::new(&format!("static/images/{}.jpg", post.id)).exists() {
+                post.image_url = Some(local_url);
+            }
+        }
+    }
+    
+    posts_vec
 }
 
 
