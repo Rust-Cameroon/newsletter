@@ -18,8 +18,8 @@ export const postsApi = {
   },
 
   getBySlug: async (slug: string): Promise<Post> => {
-    console.log('Fetching post by slug from:', API_BASE_URL + `/posts/${slug}`);
-    const response = await api.get(`/posts/${slug}`);
+    console.log('Fetching post by slug from:', API_BASE_URL + `/posts/slug/${slug}`);
+    const response = await api.get(`/posts/slug/${slug}`);
     return response.data;
   },
 

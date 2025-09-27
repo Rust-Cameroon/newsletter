@@ -659,7 +659,10 @@ fn get_posts_with_local_images(posts: &HashMap<String, Post>) -> Vec<Post> {
             let local_url = format!("/static/images/{}.jpg", post.id);
             // Check if local file exists
             if StdPath::new(&format!("static/images/{}.jpg", post.id)).exists() {
-                post.image_url = Some(local_url);
+                post.image_url = Some(local_url.clone());
+                info!("Using local image for post {}: {}", post.id, local_url);
+            } else {
+                info!("Local image not found for post {}, using MinIO URL", post.id);
             }
         }
     }

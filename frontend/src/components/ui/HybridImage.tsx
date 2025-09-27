@@ -24,28 +24,8 @@ const HybridImage: React.FC<HybridImageProps> = ({
       setIsLoading(true);
       setHasError(false);
 
-      // For first 5 posts, try local storage first
-      if (isFirstFive && src) {
-        // Extract post ID from MinIO URL or use a fallback
-        const postId = extractPostIdFromUrl(src);
-        if (postId) {
-          const localUrl = `/static/images/${postId}.jpg`;
-          
-          // Try to load local image first
-          try {
-            const response = await fetch(localUrl, { method: 'HEAD' });
-            if (response.ok) {
-              setImageSrc(localUrl);
-              setIsLoading(false);
-              return;
-            }
-          } catch (error) {
-            console.log('Local image not found, falling back to MinIO');
-          }
-        }
-      }
-
-      // Fallback to original MinIO URL
+      // The backend already returns local URLs for first 5 posts
+      // So we can directly use the src URL
       setImageSrc(src);
       setIsLoading(false);
     };
@@ -53,17 +33,17 @@ const HybridImage: React.FC<HybridImageProps> = ({
     loadImage();
   }, [src, isFirstFive]);
 
-  const extractPostIdFromUrl = (url: string): string | null => {
-    // Extract post ID from MinIO URL
-    // URL format: https://rustcameroon.com/minio/rust-cameroon-images/2025/01/27/filename.jpg
-    const match = url.match(/\/([^\/]+)\.(jpg|jpeg|png|gif)$/i);
-    return match ? match[1] : null;
-  };
 
   const handleImageError = () => {
-    if (!hasError && fallbackSrc) {
+    if (!hasError) {
       setHasError(true);
-      setImageSrc(fallbackSrc);
+      // If this is a local URL that failed, try the original MinIO URL
+      if (imageSrc.includes('/static/images/') && src && !src.includes('/static/images/')) {
+        console.log('Local image failed, falling back to MinIO URL:', src);
+        setImageSrc(src);
+      } else if (fallbackSrc) {
+        setImageSrc(fallbackSrc);
+      }
     }
   };
 
