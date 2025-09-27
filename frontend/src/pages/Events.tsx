@@ -127,9 +127,23 @@ const Events: React.FC = () => {
                       </div>
                     </div>
                     
-                    <button className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                      {t('events.register')}
-                    </button>
+                    {event.registration_url ? (
+                      <a
+                        href={event.registration_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full mt-4 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors inline-block text-center"
+                      >
+                        {t('events.register')}
+                      </a>
+                    ) : (
+                      <button 
+                        className="w-full mt-4 bg-gray-400 text-white font-medium py-2 px-4 rounded-lg cursor-not-allowed"
+                        disabled
+                      >
+                        {t('events.register')}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

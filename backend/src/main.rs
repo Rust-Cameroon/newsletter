@@ -87,6 +87,7 @@ pub struct Event {
     pub location: String,
     pub event_type: String,
     pub status: String, // "upcoming" or "past"
+    pub registration_url: Option<String>, // Optional registration link
     pub created_at: String,
 }
 
@@ -98,6 +99,7 @@ pub struct NewEvent {
     pub time: String,
     pub location: String,
     pub event_type: String,
+    pub registration_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -108,6 +110,7 @@ pub struct UpdateEvent {
     pub time: Option<String>,
     pub location: Option<String>,
     pub event_type: Option<String>,
+    pub registration_url: Option<String>,
 }
 
 // In-memory storage for posts (in production, use a database)
@@ -537,14 +540,18 @@ async fn delete_post(
 fn save_posts_to_file(posts: &HashMap<String, Post>) -> Result<(), Box<dyn std::error::Error>> {
     let posts_vec: Vec<Post> = posts.values().cloned().collect();
     let json = serde_json::to_string_pretty(&posts_vec)?;
-    fs::write("posts.json", json)?;
+    fs::write("data/posts.json", json)?;
     Ok(())
 }
 
 fn load_posts_from_file() -> HashMap<String, Post> {
-    if let Ok(content) = fs::read_to_string("posts.json") {
-        if let Ok(posts_vec) = serde_json::from_str::<Vec<Post>>(&content) {
-            return posts_vec.into_iter().map(|post| (post.slug.clone(), post)).collect();
+    // Try to load from data directory first, then fallback to current directory
+    let paths = ["data/posts.json", "posts.json"];
+    for path in &paths {
+        if let Ok(content) = fs::read_to_string(path) {
+            if let Ok(posts_vec) = serde_json::from_str::<Vec<Post>>(&content) {
+                return posts_vec.into_iter().map(|post| (post.slug.clone(), post)).collect();
+            }
         }
     }
     HashMap::new()
@@ -553,14 +560,18 @@ fn load_posts_from_file() -> HashMap<String, Post> {
 fn save_events_to_file(events: &HashMap<String, Event>) -> Result<(), Box<dyn std::error::Error>> {
     let events_vec: Vec<Event> = events.values().cloned().collect();
     let json = serde_json::to_string_pretty(&events_vec)?;
-    fs::write("events.json", json)?;
+    fs::write("data/events.json", json)?;
     Ok(())
 }
 
 fn load_events_from_file() -> HashMap<String, Event> {
-    if let Ok(content) = fs::read_to_string("events.json") {
-        if let Ok(events_vec) = serde_json::from_str::<Vec<Event>>(&content) {
-            return events_vec.into_iter().map(|event| (event.id.clone(), event)).collect();
+    // Try to load from data directory first, then fallback to current directory
+    let paths = ["data/events.json", "events.json"];
+    for path in &paths {
+        if let Ok(content) = fs::read_to_string(path) {
+            if let Ok(events_vec) = serde_json::from_str::<Vec<Event>>(&content) {
+                return events_vec.into_iter().map(|event| (event.id.clone(), event)).collect();
+            }
         }
     }
     HashMap::new()
@@ -668,6 +679,7 @@ async fn create_event(
         location: new_event.location,
         event_type: new_event.event_type,
         status,
+        registration_url: new_event.registration_url,
         created_at,
     };
     
@@ -730,6 +742,9 @@ async fn update_event(
     }
     if let Some(event_type) = update_event.event_type {
         event.event_type = event_type;
+    }
+    if let Some(registration_url) = update_event.registration_url {
+        event.registration_url = Some(registration_url);
     }
     
     events_map.insert(id.clone(), event.clone());

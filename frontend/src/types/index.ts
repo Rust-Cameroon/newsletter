@@ -19,6 +19,7 @@ export interface Event {
   location: string;
   event_type: string;
   status: string; // "upcoming" or "past"
+  registration_url?: string; // Optional registration link
   created_at: string;
 }
 

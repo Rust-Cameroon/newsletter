@@ -22,7 +22,11 @@ WORKDIR /app
 
 # Copy the binary
 COPY --from=builder /app/target/release/rust-cameroon-api /app/rust-cameroon-api
-COPY posts.json /app/posts.json
+
+# Create data directory and copy initial files
+RUN mkdir -p /app/data
+COPY posts.json /app/data/posts.json
+COPY events.json /app/data/events.json
 
 # Create non-root user
 RUN groupadd -g 1001 appgroup && \

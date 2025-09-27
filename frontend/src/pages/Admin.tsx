@@ -35,7 +35,8 @@ const Admin: React.FC = () => {
     date: '',
     time: '',
     location: '',
-    event_type: ''
+    event_type: '',
+    registration_url: ''
   });
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
@@ -186,7 +187,8 @@ const Admin: React.FC = () => {
         date: '',
         time: '',
         location: '',
-        event_type: ''
+        event_type: '',
+        registration_url: ''
       });
     } catch (error) {
       alert('Failed to save event');
@@ -201,7 +203,8 @@ const Admin: React.FC = () => {
       date: event.date,
       time: event.time,
       location: event.location,
-      event_type: event.event_type
+      event_type: event.event_type,
+      registration_url: event.registration_url || ''
     });
     setShowEventForm(true);
   };
@@ -661,6 +664,20 @@ const Admin: React.FC = () => {
                           <option value="Other">Other</option>
                         </select>
                       </div>
+                      
+                      <div>
+                        <label htmlFor="event-registration-url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Registration URL (Optional)
+                        </label>
+                        <input
+                          type="url"
+                          id="event-registration-url"
+                          value={eventFormData.registration_url}
+                          onChange={(e) => setEventFormData({ ...eventFormData, registration_url: e.target.value })}
+                          placeholder="https://example.com/register"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
                     </div>
                     
                     <div className="flex justify-end space-x-4 mt-6">
@@ -675,7 +692,8 @@ const Admin: React.FC = () => {
                             date: '',
                             time: '',
                             location: '',
-                            event_type: ''
+                            event_type: '',
+                            registration_url: ''
                           });
                         }}
                         className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
