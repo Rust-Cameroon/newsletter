@@ -5,11 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { usePosts } from '../hooks/usePosts';
 import PostCard from '../components/ui/PostCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Countdown from '../components/ui/Countdown';
+import { useUpcomingEvents } from '../hooks/useEvents';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const { posts, loading, error } = usePosts();
   const recentPosts = posts.slice(0, 3);
+  const { events: upcomingEvents } = useUpcomingEvents();
+  const nextEvent = upcomingEvents
+    .slice()
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   return (
     <>
@@ -53,6 +59,15 @@ const Home: React.FC = () => {
         })}
         </script>
       </Helmet>
+
+      {/* Countdown for next upcoming event (if any) */}
+      {nextEvent && (
+        <Countdown 
+          targetDateISO={nextEvent.date}
+          targetTime={nextEvent.time}
+          title={`Next Event: ${nextEvent.title}`}
+        />
+      )}
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-20">
