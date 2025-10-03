@@ -29,7 +29,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/posts.json:/app/posts.json:rw
+      - backend_data:/app/data
+      - backend_images:/app/static/images
     environment:
       - RUST_LOG=info
       - PORT=8000
@@ -64,3 +65,5 @@ services:
 
 volumes:
   minio_data:
+  backend_data:
+  backend_images:
