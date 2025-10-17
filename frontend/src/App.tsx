@@ -9,7 +9,6 @@ import Blog from './pages/Blog';
 import PostDetail from './pages/PostDetail';
 import Admin from './pages/Admin';
 import ErrorBoundary from './components/ui/ErrorBoundary';
-import CampusTour from './pages/CampusTour';
 import './i18n';
 
 function App() {
