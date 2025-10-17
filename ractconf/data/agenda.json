@@ -1,0 +1,134 @@
+{
+  "Day 1": {
+    "title": "Scaling with Rust: Building Secure and Reliable Digital Infrastructure for the Future",
+    "theme": "Exploring Rust as a catalyst for secure, reliable, and future-ready digital infrastructure. Empowering industries and nations to scale innovation with confidence.",
+    "sessions": [
+      {
+        "time": "09:00 – 10:00 AM",
+        "session": "Registration & Welcome",
+        "context": "Participants arrive, settle in, and connect with early attendees.",
+        "speakers": []
+      },
+      {
+        "time": "10:00 – 11:00 AM",
+        "session": "Grand Opening Ceremony & Official Launch",
+        "context": "Opening remarks by UDM University Management, the Mayor, and the Minister of Post and Telecommunication. Marks the official launch of the Rust Africa Campus Tour in Cameroon. Includes a keynote by Yannick Siewe (Adorsys).",
+        "speakers": ["Yannick Siewe"]
+      },
+      {
+        "time": "11:00 – 11:20 AM",
+        "session": "Keynote: “Rust’s Ascendancy – Powering the Next Generation of Software”",
+        "context": "Presentation on Rust’s growing importance in secure and scalable software systems.",
+        "speakers": ["Rebecca Rumbul"]
+      },
+      {
+        "time": "11:25 – 12:15 PM",
+        "session": "Panel Discussion: “Scaling with Rust – Industry Leaders Share Their Strategies”",
+        "context": "Panel featuring John Zeller, Francis Pouatcha, Evans Yemey, and representatives from the Rust Foundation discussing real-world Rust adoption in enterprise systems.",
+        "speakers": ["John Zeller", "Francis Pouatcha", "Evans Yemey"]
+      },
+      {
+        "time": "12:20 – 01:00 PM",
+        "session": "Exclusive Round Table & Networking Lunch",
+        "context": "Invitation-only session for startup executives, organizational leaders, and guests. Held at Lewatt Hotel.",
+        "speakers": []
+      },
+      {
+        "time": "01:00 – 02:00 PM",
+        "session": "Talk: “Fortifying Cybersecurity and Cyber-Defense for Africa’s Digital Future”",
+        "context": "Discussion on Rust’s role in eliminating software vulnerabilities and strengthening cybersecurity across Africa.",
+        "speakers": ["John Zeller", "Dilane Bengono"]
+      },
+      {
+        "time": "02:05 – 03:00 PM",
+        "session": "Grand Panel: “The Future of Rust in Africa – Opportunities, Challenges & the Path Forward”",
+        "context": "Panel with Francis Pouatcha, Enow Scott, Mordecai Emmanuel, Evans Yemey, and Tekum Emmanuella exploring the Rust ecosystem in Africa.",
+        "speakers": ["Francis Pouatcha", "Enow Scott", "Mordecai Emmanuel", "Evans Yemey", "Tekum Emmanuella"]
+      },
+      {
+        "time": "03:05 – 03:30 PM",
+        "session": "Concluding Remarks & Group Photo",
+        "context": "Wrap-up of Day 1’s learnings followed by a group photo.",
+        "speakers": []
+      },
+      {
+        "time": "03:40 – 05:00 PM",
+        "session": "City Tour",
+        "context": "Guided city tour with event officials and special guests.",
+        "speakers": []
+      }
+    ]
+  },
+  "Day 2": {
+    "title": "Building the Future: Advanced Rust & Real-World Applications (Workshop Day)",
+    "theme": "Deep dive into advanced Rust concepts and real-world applications driving innovation and career growth.",
+    "sessions": [
+      {
+        "time": "08:30 – 09:00 AM",
+        "session": "Welcome Back & Networking Coffee",
+        "context": "Arrive, settle in, and prepare for a full day of Rust learning.",
+        "speakers": []
+      },
+      {
+        "time": "09:05 – 09:50 AM",
+        "session": "The Story of Rust",
+        "context": "Overview of Rust’s history and evolution.",
+        "speakers": ["Enow Scott"]
+      },
+      {
+        "time": "09:55 – 10:55 AM",
+        "session": "Technical Deep Dive 1: “Let’s Install Rust!”",
+        "context": "Hands-on installation session with live guidance.",
+        "speakers": ["Christian Yemele", "Boris Ngha"]
+      },
+      {
+        "time": "10:55 – 11:10 AM",
+        "session": "Coffee Break",
+        "context": "",
+        "speakers": []
+      },
+      {
+        "time": "11:15 – 12:00 PM",
+        "session": "Presentation by Francesco Ciulla",
+        "context": "Practical Rust talk by Francesco Ciulla.",
+        "speakers": ["Francesco Ciulla"]
+      },
+       {
+        "time": "12:00 – 1:00 PM",
+        "session": "Live Demo",
+        "context": "Practical Rust demo by Ingrid Kamga.",
+        "speakers": ["Ingrid Kamga"]
+      },
+      {
+        "time": "01:00 – 02:00 PM",
+        "session": "Lunch Break",
+        "context": "",
+        "speakers": []
+      },
+      {
+        "time": "02:05 – 03:05 PM",
+        "session": "Panel: “What’s It Like to Use Rust?”",
+        "context": "Discussion on Rust’s developer experience: compiler, Cargo, and productivity.",
+        "speakers": ["Hermann Awatsa", "Enow Scott", "Ingrid Kamga", "Christian Yemele", "Fossouo Martial"]
+      },
+      {
+        "time": "03:10 – 02:55 PM",
+        "session": "“Your Adventure into Rust”",
+        "context": "Intro to learning resources: The Book, Rustlings, and community networks.",
+        "speakers": ["Fossouo Martial"]
+      },
+      {
+        "time": "03:55 – 04:10 PM",
+        "session": "Closing Remarks & Vote of Thanks",
+        "context": "Summary and next steps by Rust Africa leadership.",
+        "speakers": ["Enow Scott", "Francis Pouatcha"]
+      },
+      {
+        "time": "04:15 PM onwards",
+        "session": "Extended Networking & Mentorship Clinic",
+        "context": "One-on-one mentoring and project idea discussions.",
+        "speakers": ["All Speakers"]
+      }
+    ]
+  }
+}

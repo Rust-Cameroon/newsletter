@@ -1,0 +1,424 @@
+/* ==== GLOBAL RESET ==== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==== EVENT NAVBAR ==== */
+.event-navbar {
+    background: #222 url('./pictures/rust-programming.png') no-repeat center center; /* Dark background with Rust logo */
+    background-size: 600px; /* Adjust size of the Rust logo */
+    color: #fff;
+    padding: 40px 20px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.hero-heading {
+    font-size: 4em; /* Reduced by 2 */
+    margin-bottom: 10px;
+    font-family: 'Arial', sans-serif;
+}
+
+.hero-meta {
+    font-size: 2.5em; /* Reduced by 2 */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.attendee-info {
+    font-size: 2.8em; /* Reduced by 2 */
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.hero-meta {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.hero-intro {
+    font-size: 1.1em;
+    max-width: 800px;
+    margin: 0 auto;
+}
+body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(
+        135deg,
+        #fdeee3 0%,       /* gentle Rust peach */
+        #fffef9 35%,      /* soft neutral white */
+        #f6fff8 70%,      /* light Cameroon green tint */
+        #fdeee3 100%      /* gentle Rust peach again */
+    );
+    color: #222;
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ==== HEADINGS ==== */
+h1, h2 {
+    text-align: center;
+    margin: 40px 0 20px;
+    color: #333;
+    transition: color 0.3s ease;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+h1 {
+    font-size: 2.4em;
+    color: #b7410e; /* Rust accent */
+}
+
+h2 {
+    font-size: 1.8em;
+    color: #00844d; /* Soft Cameroon green */
+}
+
+/* ==== SPEAKERS GRID ==== */
+.speakers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 35px;
+    padding: 40px 20px 80px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* ==== SPEAKER CARD ==== */
+.speaker-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    transform: translateY(0);
+    border-top: 4px solid #e69e6a; /* Lighter Rust orange */
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.speaker-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    border-top-color: #fcd116; /* Cameroon yellow highlight */
+}
+
+.speaker-photo {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.speaker-card:hover .speaker-photo {
+    transform: scale(1.04);
+}
+
+/* ==== SPEAKER INFO ==== */
+.speaker-info {
+    padding: 18px;
+    text-align: center;
+}
+
+.speaker-name {
+    font-size: 1em;
+    font-weight: 700;
+    margin-bottom: 9px;
+    color: #1e1e1e;
+}
+
+.speaker-title {
+    color: #666;
+    font-size: 0.95em;
+    margin-bottom: 4px;
+}
+
+.speaker-company {
+    font-weight: 500;
+    color: #b7410e;
+    font-size: 0.9em;
+}
+
+.speaker-social {
+    margin-top: 10px;
+}
+
+.speaker-social a {
+    text-decoration: none;
+    color: #00844d;
+    font-size: 1.2em;
+    margin: 0 6px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.speaker-social a:hover {
+    color: #ce1126; /* Cameroon red accent */
+    transform: scale(1.15);
+}
+
+/* ==== EVENT SECTION ==== */
+.event-section {
+    background: #f5f5f5; /* Distinct light grey background */
+    padding: 60px 0;
+}
+.event-description {
+    width: 80%;
+    margin: 0 auto;
+    padding: 40px;
+    background: #ffffff; /* White background for contrast */
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: justify;
+    border-left: 8px solid #b7410e; /* Rust accent */
+    position: relative;
+}
+
+.event-description::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8px;
+    width: 100%;
+    background: linear-gradient(90deg, #b7410e, #fcd116, #00844d);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.event-description h2 {
+    text-align: center;
+    color: #00844d;
+    margin-bottom: 15px;
+}
+
+.event-description p {
+    margin-bottom: 16px;
+    color: #333;
+}
+
+/* ==== AGENDA SECTION ==== */
+#agenda-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.agenda-day {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 45px;
+    padding: 25px 30px;
+    border-left: 5px solid #00844d;
+    transition: box-shadow 0.3s, border-color 0.3s;
+    background-image: linear-gradient(135deg, rgba(254, 249, 244, 0.8), rgba(255, 255, 255, 0.9));
+}
+
+.agenda-day:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border-color: #e69e6a;
+}
+
+.agenda-day h2 {
+    color: #b7410e;
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.agenda-theme {
+    font-style: italic;
+    color: #777;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+/* ==== SESSIONS ==== */
+.agenda-session {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    align-items: flex-start;
+    transition: background-color 0.3s ease;
+}
+
+.agenda-session:hover {
+    background-color: #f9fdfb;
+}
+
+.session-time {
+    width: 160px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+.session-time::before {
+    content: "🕒";
+.speaker-intro {
+    max-width: 80vw; /* Responsive width based on viewport */
+    margin: 0 auto 20px; /* Center the text */
+    text-align: center; /* Center align the text */
+    margin: 0 auto 20px;
+    text-align: center;
+    font-size: 1.2em;
+    line-height: 1.4;
+    white-space: normal; /* Allow text to wrap */
+}
+.section-intro {
+    max-width: 800px;
+    margin: 0 auto 20px;
+    text-align: center;
+    font-size: 1.2em;
+    line-height: 1.4;
+}
+    margin-right: 5px;
+}
+
+.session-details {
+    flex: 1;
+    padding-left: 15px;
+}
+
+/* ==== SESSION SPEAKERS ==== */
+.session-speakers {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.session-speakers .speaker-card {
+    width: 100px;
+    border-top: 3px solid #00844d;
+}
+
+.session-speakers .speaker-photo {
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fcd116;
+}
+
+.session-speakers .speaker-info {
+    font-size: 0.8em;
+}
+
+/* ==== ANIMATIONS ==== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+.footer {
+    background: #222 url('./pictures/rust-programming.png') no-repeat center center; /* Dark background with Rust logo */
+    background-size: 600px; /* Adjust size of the Rust logo */
+    padding: 40px 20px;
+    text-align: center;
+    color: #fff;
+    border-top: 5px solid #b7410e; /* Rust accent border */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center; /* Center images horizontally */
+    align-items: center;
+    gap: 20px; /* Add space between images */
+}
+
+.map-image, .campus-image {
+    max-width: 45%;
+    height: auto;
+    margin-bottom: 0; /* Remove bottom margin for horizontal alignment */
+}
+
+.footer h3, .footer h4 {
+    margin: 10px 0;
+    color: #333;
+}
+.footer {
+    background-color: #f5f5f5;
+    padding: 20px;
+    text-align: center;
+}
+
+.map-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==== SPONSORS SECTION ==== */
+.sponsors-title {
+    font-size: 1.8em;
+    color: #00844d; 
+    text-align: center;
+    margin: 60px 0 30px;
+    font-weight: 700;
+}
+
+.sponsors-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 20px; 
+    max-width: 1200px; 
+    margin: 40px auto 80px;
+    overflow-x: auto;
+    white-space: nowrap;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); 
+    border-left: 5px solid #e69e6a; 
+    position: relative; 
+}
+
+.sponsors-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8px;
+    width: 100%;
+    background: linear-gradient(90deg, #b7410e, #fcd116, #00844d); /* Matched event-description gradient */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.sponsor-item {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 90px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sponsor-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sponsor-logo {
+    max-width: 100%;
+    max-height: 70px;
+    height: auto;
+    filter: grayscale(0%);
+    opacity: 1;
+}

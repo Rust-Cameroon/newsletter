@@ -16,6 +16,7 @@ const Navbar: React.FC = () => {
     { path: '/about', label: t('navigation.about') },
     { path: '/events', label: t('navigation.events') },
     { path: '/blog', label: t('navigation.blog') },
+    { path: '/campus-tour', label: 'Campus Tour' },
   ];
 
   return (

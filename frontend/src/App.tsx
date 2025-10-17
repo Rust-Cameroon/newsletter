@@ -9,6 +9,7 @@ import Blog from './pages/Blog';
 import PostDetail from './pages/PostDetail';
 import Admin from './pages/Admin';
 import ErrorBoundary from './components/ui/ErrorBoundary';
+import CampusTour from './pages/CampusTour';
 import './i18n';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<PostDetail />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/campus-tour" element={<CampusTour />} />
               </Routes>
             </Layout>
           </Router>

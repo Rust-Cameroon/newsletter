@@ -1,0 +1,189 @@
+[
+    {
+        "Name": "Francis Pouatcha",
+        "Title": "Founder & CTO",
+        "Company": "adorsys",
+        "Photo": "./pictures/Francis.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/francis-pouatcha-54235a8",
+            "Company": "https://adorsys.com"
+        }
+    },
+    {
+        "Name": "John Zeller",
+        "Title": "Managing Director and CTO",
+        "Company": "adorsys Ireland",
+        "Photo": "./pictures/Andrew.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/a-john-zeller",
+            "Company": "https://adorsys.com"
+        }
+    },
+    {
+        "Name": "Evans Yemey",
+        "Title": "Founder and President, Promotic Academy",
+        "Company": "Promotic",
+        "Photo": "./pictures/Evans.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/yves-komlan-yeme-kponsou-a79505b2/",
+            "Company": "https://promotic-edu.org/"
+        }
+    },
+    {
+        "Name": "Enow Scott",
+        "Title": "Founder, Rust Cameroon Community; Co-founder, Rust Africa; Product Manager, adorsys",
+        "Company": "Rust Africa",
+        "Photo": "./pictures/Scott.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/enow-scott-7790b2243/",
+            "Company": "https://rustafrica.org"
+        }
+    },
+    {
+        "Name": "Francesco Ciulla",
+        "Title": "Software Engineer and Developer Advocate, daily.dev",
+        "Company": "daily dev",
+        "Photo": "./pictures/Francesco.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/francesco-ciulla-roma",
+            "Company": "https://daily.dev"
+        }
+    },
+    {
+        "Name": "Yannick Siewe",
+        "Title": "Senior Cloud Consultant (DevOps & Architecture)",
+        "Company": "adorsys",
+        "Photo": "./pictures/Yannick.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/yannick-siewe-58400338",
+            "Company": "https://adorsys.com"
+        }
+    },
+    {
+        "Name": "Willie Chieukam",
+        "Title": "Founder & IT Project Manager",
+        "Company": "Parcaune GmbH",
+        "Photo": "./pictures/Willie.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/williechieukam",
+            "Company": "https://www.parcaune.com/"
+        }
+    },
+    {
+        "Name": "Blessing Lum",
+        "Title": "Full-stack Software Engineer @adorsys;\nScrum Master;\nRust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Blessing.jpg",
+        "Social": {
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Christian Yemele",
+        "Title": "Co-founder, Rust Cameroon;\nAssociate, Rust Africa;\nFull-stack Software Engineer, @adorsys",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Christian.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/christian-yemele-a17102292/",
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Dilane Bengono",
+        "Title": "Chief Information Security Officer",
+        "Company": "BVMAC",
+        "Photo": "./pictures/Dilane.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/chanel-dylane-b-91b850194/",
+            "Company": "https://www.bvm-ac.org"
+        }
+    },
+    {
+        "Name": "Hermann Awatsa",
+        "Title": "Senior Systems Engineer and Rust Advocate",
+        "Company": null,
+        "Photo": "./pictures/Hermann.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/hermann-awatsa/"
+        }
+    },
+    {
+        "Name": "Enow Sinke",
+        "Title": "Software Engineer;\nDevOps Expert @adorsys and Rust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Sinke.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/enow-sinke/",
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Ingrid Kamga",
+        "Title": "Senior Full-stack Software Engineer",
+        "Company": null,
+        "Photo": "./pictures/Ingrid.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/ingrid-puppet/",
+            "Company": "https://adorsys.com"
+        }
+    },
+    {
+        "Name": "Tekum Emmanuella",
+        "Title": "Full-stack Software Engineer, @adorsys;\nScrum Master;\nRust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Ella.jpg",
+        "Social": {
+            "LinkedIn": null,
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Assah Bismark",
+        "Title": "Full-stack Software Engineer, @adorsys;\nRust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Bismark.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/assah-bismark-608a6a251/",
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Arthur Tcheutchoua",
+        "Title": "Full-stack Software Engineer, @adorsys;\nRust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Arthur.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/arthur-tcheutchoua-6473a02a5/",
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Mordecai Emmanuel",
+        "Title": "Co-founder, Rust Africa; Rust Foundation Fellow",
+        "Company": "Rust Africa",
+        "Photo": "./pictures/Mordecai.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/mordecai-etukudo-661b6a191/",
+            "Company": "https://rustafrica.org"
+        }
+    },
+    {
+        "Name": "Boris Ngha",
+        "Title": "Full-stack Software Engineer, @adorsys;\nRust Advocate",
+        "Company": "Rust Cameroon",
+        "Photo": "./pictures/Boris.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/ngha-boris-895936280/",
+            "Company": "https://rustcameroon.com"
+        }
+    },
+    {
+        "Name": "Fossouo Martial",
+        "Title": "Machine Learning and AI Engineer",
+        "Company": null,
+        "Photo": "./pictures/Martial.jpg",
+        "Social": {
+            "LinkedIn": "https://www.linkedin.com/in/martial-fossouo-635045300/"
+        }
+    }
+]
