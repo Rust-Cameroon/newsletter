@@ -26,7 +26,6 @@ function App() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<PostDetail />} />
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/campus-tour" element={<CampusTour />} />
               </Routes>
             </Layout>
           </Router>

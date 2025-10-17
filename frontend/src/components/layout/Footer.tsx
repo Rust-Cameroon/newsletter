@@ -82,18 +82,6 @@ const Footer: React.FC = () => {
               </li>
             </ul>
           </div>
-          {/* Venue Location */}
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Venue Location</h3>
-            <p>BANEKANE WEST CAMEROON</p>
-            <img src="/ractconf/pictures/udm.jpg" alt="Campus" className="campus-image mt-4" />
-            <h4 className="text-lg font-semibold mt-4">Directions</h4>
-            <p>Please use Google Maps to find out how to get there.</p>
-            <img src="/ractconf/pictures/map.png" alt="Map" className="map-image mt-4" />
-            <p className="mt-4">
-              Find us on Google Maps: <a href="https://maps.app.goo.gl/VdEHhCvgojWV4ULaA" target="_blank" className="text-orange-400">View Location</a>
-            </p>
-          </div>
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
